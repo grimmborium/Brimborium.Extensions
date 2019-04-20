@@ -1,50 +1,69 @@
 ﻿namespace Brimborium.Extensions.Http {
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Concurrent;
     using System.Net.Http;
+
     public class HttpClientGenerator : IHttpClientGenerator {
         private readonly ConcurrentDictionary<HttpClientConfiguration, HttpClientRecycler> _Recyclers;
-        public HttpClientGenerator() {
+
+        public HttpClientGenerator(
+            IOptions<HttpClientGeneratorOptions> options,
+            IServiceProvider services,
+            IServiceScopeFactory scopeFactory,
+            ILoggerFactory loggerFactory
+            ) {
             this._Recyclers = new ConcurrentDictionary<HttpClientConfiguration, HttpClientRecycler>();
+            this.Configurations = new ConcurrentDictionary<string, HttpClientConfiguration>(StringComparer.Ordinal);
+
+            this.Services = services;
+            this.ScopeFactory = scopeFactory;
+            this.LoggerFactory = loggerFactory;
+
+            if (options?.Value != null) {
+                var configurations = options.Value.Configurations;
+                foreach (var configuration in configurations) {
+                    if (string.IsNullOrEmpty(configuration.Name)) {
+                        throw new ArgumentException(nameof(options), "configuration.Name is requiered");
+                    } else {
+                        if (!this.Configurations.TryAdd(configuration.Name, configuration)) {
+                            throw new ArgumentException(nameof(options), $"configuration.Name({configuration.Name}) is already used.");
+                        }
+                    }
+                }
+            }
+        }
+
+        public ConcurrentDictionary<string, HttpClientConfiguration> Configurations { get; }
+
+        public IServiceProvider Services { get; }
+
+        public IServiceScopeFactory ScopeFactory { get; }
+
+        public ILoggerFactory LoggerFactory { get; }
+
+        public virtual HttpClient CreateHttpClient(string name) {
+            if (this.Configurations.TryGetValue(name, out var configuration)) {
+                return this.CreateHttpClient(configuration);
+            }
+            return null;
         }
 
         public virtual HttpClient CreateHttpClient(HttpClientConfiguration configuration) {
-            throw new System.NotImplementedException();
-        }
-
-        public HttpClientCaretaker GetHttpClient(HttpClientConfiguration configuration) {
-            HttpClientCaretaker result = null;
             while (true) {
                 if (this._Recyclers.TryGetValue(configuration, out var recycler)) {
-                    result = recycler.GetHttpClient();
-                    break;
+                    return recycler.CreateHttpClient();
                 } else {
                     recycler = new HttpClientRecycler(this, configuration);
                     if (!this._Recyclers.TryAdd(configuration, recycler)) {
                         continue;
                     } else {
-                        result = recycler.GetHttpClient();
-                        break;
+                        return recycler.CreateHttpClient();
                     }
                 }
             }
-            if (result == null) {
-                var client = this.CreateHttpClient(configuration);
-                result = new HttpClientCaretaker(client, configuration, this.OnDisposeHttpClient);
-            }
-            return result;
-        }
-
-        private void OnDisposeHttpClient(HttpClientCaretaker caretaker) {            
-            var (httpClient, configuration) = caretaker.WrestHttpClient();
-            if (httpClient == null) { return; }
-            if (configuration == null) { return; }
-            if (this._Recyclers.TryGetValue(configuration, out var recycler)) {
-                recycler.Recycle(httpClient);
-            } else {
-                httpClient.Dispose();
-            }
-             
         }
     }
 }
