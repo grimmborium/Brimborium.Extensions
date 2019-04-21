@@ -3,12 +3,13 @@
     using System;
     using System.Net.Http;
     using System.Threading;
-    using System.Threading.Tasks;
 
     public class HttpClientRecycler {
         private HttpClientGenerator _HttpClientGenerator;
         private ReuseRecycleHandler _ReuseRecycleHandler;
         private readonly HttpClientConfiguration _Configuration;
+        private int _Usage;
+        private Timer _Timer;
 
         public HttpClientRecycler(
             HttpClientGenerator httpClientGenerator,
@@ -34,77 +35,70 @@
             return httpClient;
         }
 
-        public ReuseRecycleHandler CreateReuseRecycleHandler() {
-            var services = this._HttpClientGenerator.Services;
-            var scope = (IServiceScope)null;
+        private ReuseRecycleHandler CreateReuseRecycleHandler() {
+            // within lock
+            System.Threading.Interlocked.Increment(ref this._Usage);
+            //
+            try {
+                var services = this._HttpClientGenerator.Services;
+                var scope = (IServiceScope)null;
 
-            if (!this._Configuration.SuppressHandlerScope) {
-                scope = this._HttpClientGenerator.ScopeFactory.CreateScope();
-                services = scope.ServiceProvider;
+                if (!this._Configuration.SuppressHandlerScope) {
+                    scope = this._HttpClientGenerator.ScopeFactory.CreateScope();
+                    services = scope.ServiceProvider;
+                }
+
+                var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
+                builder.SetConfiguration(this._Configuration);
+                builder.ApplyConfig();
+                var messageHandler = builder.Build();
+
+                var loggerName = this._Configuration.Name;
+
+                var outerLogger = this._HttpClientGenerator.LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.Outer");
+
+                var handler = new ReuseRecycleHandler(
+                    messageHandler,
+                    this._Configuration,
+                    scope,
+                    outerLogger
+                    );
+
+                System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+
+                return handler;
+            } catch {
+                System.Threading.Interlocked.Decrement(ref this._Usage);
+                throw;
             }
-
-            var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
-            builder.SetConfiguration(this._Configuration);
-            builder.ApplyConfig();
-            var messageHandler = builder.Build();
-
-            var handler = new ReuseRecycleHandler(
-                messageHandler,
-                this._Configuration,
-                scope);
-
-            return handler;
         }
 
         internal void OnDispose(DisposeRecycleHandler disposeRecycleHandler) {
-            
-            throw new NotImplementedException();
-        }
-    }
-
-    public class HttpClientConfigurationHandler : DelegatingHandler {
-        private readonly HttpClientConfiguration _Configuration;
-
-        public HttpClientConfigurationHandler(HttpClientConfiguration configuration) {
-            this._Configuration = configuration;
-        }
-    }
-
-    public class ReuseRecycleHandler : DelegatingHandler {
-        private readonly HttpClientConfiguration _Configuration;
-        private readonly IServiceScope _Scope;
-
-        public ReuseRecycleHandler(
-            HttpMessageHandler innerHandler,
-            HttpClientConfiguration configuration,
-            IServiceScope scope
-            ) : base(innerHandler) {
-            this._Configuration = configuration;
-            this._Scope = scope;
+            if (System.Threading.Interlocked.Decrement(ref this._Usage) == 0) {
+                // Create Timer
+                lock (this) {
+                    if (Volatile.Read(ref this._Timer) == null) {
+                        var timer = NonCapturingTimer.Create(this.OnTimer, null, TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(1));
+                        if (System.Threading.Interlocked.CompareExchange(ref this._Timer, timer, null) is null) {
+                            // OK
+                        } else {
+                            timer.Dispose();
+                        }
+                    }
+                }
+            }
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-            return base.SendAsync(request, cancellationToken);
-        }
-
-        protected override void Dispose(bool disposing) {
-            //base.Dispose(disposing);
-        }
-    }
-
-    public class DisposeRecycleHandler : DelegatingHandler {
-        private readonly HttpClientRecycler _HttpClientRecycler;
-
-        public DisposeRecycleHandler(
-            HttpMessageHandler innerHandler,
-            HttpClientRecycler httpClientRecycler
-            ) : base(innerHandler) {
-            this._HttpClientRecycler = httpClientRecycler;
-        }
-        
-        protected override void Dispose(bool disposing) {
-            this._HttpClientRecycler.OnDispose(this);
-            base.Dispose(disposing);
+        private void OnTimer(object state) {
+            if (this._Usage == 0) {
+                lock (this) {
+                    var handler = System.Threading.Interlocked.Exchange(ref this._ReuseRecycleHandler, null);
+                    System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+                    handler?.Dispose();
+                }
+            } else {
+                System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+            }
         }
     }
 }
