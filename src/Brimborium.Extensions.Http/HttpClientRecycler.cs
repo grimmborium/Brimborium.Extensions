@@ -1,21 +1,34 @@
 ﻿namespace Brimborium.Extensions.Http {
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Net.Http;
     using System.Threading;
 
+    /// <summary>Controlls the creating and disposing of the HttpClient and HttpMessageHandler stack.</summary>
     public class HttpClientRecycler {
-        private HttpClientGenerator _HttpClientGenerator;
+        private readonly IServiceProvider _Services;
+        private readonly IServiceScopeFactory _ScopeFactory;
+        private readonly ILoggerFactory _LoggerFactory;
         private ReuseRecycleHandler _ReuseRecycleHandler;
         private readonly HttpClientConfiguration _Configuration;
         private int _Usage;
         private Timer _Timer;
 
+        /// <summary>ctor</summary>
+        /// <param name="services">the services</param>
+        /// <param name="scopeFactory">the scope factory</param>
+        /// <param name="loggerFactory">the logger factory</param>
+        /// <param name="configuration">the configuration</param>
         public HttpClientRecycler(
-            HttpClientGenerator httpClientGenerator,
+            IServiceProvider services,
+            IServiceScopeFactory scopeFactory,
+            ILoggerFactory loggerFactory,
             HttpClientConfiguration configuration
             ) {
-            this._HttpClientGenerator = httpClientGenerator;
+            this._Services = services;
+            this._ScopeFactory = scopeFactory;
+            this._LoggerFactory = loggerFactory;
             this._Configuration = configuration;
         }
 
@@ -40,23 +53,26 @@
             System.Threading.Interlocked.Increment(ref this._Usage);
             //
             try {
-                var services = this._HttpClientGenerator.Services;
+                var services = this._Services;
                 var scope = (IServiceScope)null;
 
                 if (!this._Configuration.SuppressHandlerScope) {
-                    scope = this._HttpClientGenerator.ScopeFactory.CreateScope();
-                    services = scope.ServiceProvider;
+                    scope = this._ScopeFactory?.CreateScope();
+                    if (scope != null) {
+                        services = scope.ServiceProvider;
+                    }
                 }
+
+                var loggerName = this._Configuration.Name;
+                //
+                var outerLogger = this._LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
+                var innerLogger = this._LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
 
                 var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
                 builder.SetConfiguration(this._Configuration);
                 builder.ApplyConfig();
-                var messageHandler = builder.Build();
-
-                var loggerName = this._Configuration.Name;
-
-                var outerLogger = this._HttpClientGenerator.LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.Outer");
-
+                var messageHandler = builder.Build(innerLogger);
+                
                 var handler = new ReuseRecycleHandler(
                     messageHandler,
                     this._Configuration,

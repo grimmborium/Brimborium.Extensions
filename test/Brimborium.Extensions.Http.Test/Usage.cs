@@ -5,7 +5,7 @@ namespace Brimborium.Extensions.Http.Test {
     public class Usage {
         [Fact]
         public void Usage1() {
-            var sut = new HttpClientGenerator();
+            var sut = new HttpClientGenerator(null, null, null, null);
             var cfg1 = new HttpClientConfiguration();
             var cfg2 = new HttpClientConfiguration();
             var client1 = sut.CreateHttpClient(cfg1);
@@ -14,15 +14,15 @@ namespace Brimborium.Extensions.Http.Test {
         }
         [Fact]
         public void Usage2() {
-            var sut = new HttpClientGenerator();
-            var cfg1 = new HttpClientConfiguration() { BaseUrl= "https://www.wikipedia.org/" };
-            var cfg2 = new HttpClientConfiguration() { BaseUrl = "https://www.wikipedia.org/" };
+            var sut = new HttpClientGenerator(null, null, null, null);
+            var cfg1 = new HttpClientConfiguration() { BaseAddress = "https://www.wikipedia.org/" };
+            var cfg2 = new HttpClientConfiguration() { BaseAddress = "https://www.wikipedia.org/" };
 
             var client1 = sut.CreateHttpClient(cfg1);
-            var client2 = sut.CreateHttpClient(cfg2);            
+            var client2 = sut.CreateHttpClient(cfg2);
             //Assert.Same(client1, client2);
 
-            cfg2.BaseUrl = "https://localhost";
+            cfg2.BaseAddress = "https://localhost";
             var client3 = sut.CreateHttpClient(cfg2);
             //Assert.NotSame(client2, client3);
 

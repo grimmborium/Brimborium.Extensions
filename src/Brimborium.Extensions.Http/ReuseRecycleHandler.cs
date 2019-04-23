@@ -1,4 +1,5 @@
 ﻿namespace Brimborium.Extensions.Http {
+    using Brimborium.Extensions.Http.Logging;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
@@ -8,12 +9,20 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-
-    public class ReuseRecycleHandler : DelegatingHandler {
+    /// <summary>
+    /// The 2cd outmost handler in the stack.
+    /// This is the first handler that will be reused.
+    /// </summary>
+    public class ReuseRecycleHandler : DelegatingHandler, IDisposable {
         private readonly HttpClientConfiguration _Configuration;
-        private readonly IServiceScope _Scope;
         private readonly ILogger _Logger;
+        private IServiceScope _Scope;
 
+        /// <summary>ctor</summary>
+        /// <param name="innerHandler">the next inner handler.</param>
+        /// <param name="configuration">the configuration to use</param>
+        /// <param name="scope">the scope.</param>
+        /// <param name="logger">the logger.</param>
         public ReuseRecycleHandler(
             HttpMessageHandler innerHandler,
             HttpClientConfiguration configuration,
@@ -39,6 +48,12 @@
             }
         }
 
+        protected override void Dispose(bool disposing) {
+            using (var scope = this._Scope) {
+                base.Dispose(disposing);
+                this._Scope = null;
+            }
+        }
 
         private static class Log {
             public static class EventIds {

@@ -2,42 +2,64 @@
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// The Configuration to build a new HttpClient.
+    /// (Noramlly) If the Configuration is registered to the generator the configuration should be treated as immutable.
+    /// You can modify it, but be aware that clients can exists.
+    /// </summary>
     public class HttpClientConfiguration : IEquatable<HttpClientConfiguration> {
         private Dictionary<string, object> _AdditionalProperties;
 
+        /// <summary>ctor</summary>
         public HttpClientConfiguration() {
             this.Name = string.Empty;
             this.Discriminator = string.Empty;
-            this.BaseUrl = string.Empty;
-            this.PrimaryConfigure = new List<Action<HttpMessageHandlerBuilder>>();
-            this.AdditionalConfigure = new List<Action<HttpMessageHandlerBuilder>>();
+            this.BaseAddress = string.Empty;
+            this.PrimaryHandlerConfigurations = new List<Action<HttpMessageHandlerBuilder>>();
+            this.AdditionalHandlerConfigurations = new List<Action<HttpMessageHandlerBuilder>>();
         }
 
+        /// <summary>The Name is a part of the key to reuse the HttpClient based on this configuration.</summary>
         public string Name { get; set; }
 
+        /// <summary>The Discriminator is a part of the key to reuse the HttpClient based on this configuration.</summary>
         public string Discriminator { get; set; }
 
-        public string BaseUrl { get; set; }
+        /// <summary>
+        /// The BaseAddress is the source of the <see cref="System.Net.Http.HttpClient.BaseAddress"/>.
+        /// The BaseAddress is a part of the key to reuse the HttpClient based on this configuration.
+        /// </summary>
+        public string BaseAddress { get; set; }
 
+        /// <summary>
+        /// Foreach instance of a HttpClient a Scope is created. Set this to true to suppress this.
+        /// </summary>
         public bool SuppressHandlerScope { get; set; }
 
+        /// <summary>The Credentials can be used by a Handler to do the authentication.</summary>
         public object Credentials { get; set; }
 
+        /// <summary>The AdditionalProperties can be used by a Handler.</summary>
         public Dictionary<string, object> AdditionalProperties => this._AdditionalProperties ?? (this._AdditionalProperties = new Dictionary<string, object>());
 
-        public List<Action<HttpMessageHandlerBuilder>> PrimaryConfigure { get; }
+        /// <summary>This list of action should create or modify the Primay HttpMessageHandler.</summary>
+        public List<Action<HttpMessageHandlerBuilder>> PrimaryHandlerConfigurations { get; }
 
-        public List<Action<HttpMessageHandlerBuilder>> AdditionalConfigure { get; }
+        /// <summary>This list of action should create additiona HttpMessageHandlers.</summary>
+        public List<Action<HttpMessageHandlerBuilder>> AdditionalHandlerConfigurations { get; }
 
+        /// <summary>.Clone this.</summary>
+        /// <returns>a clone of this.</returns>
         public HttpClientConfiguration Clone() {
-            var result = new HttpClientConfiguration();
-            result.Name = this.Name;
-            result.Discriminator = this.Discriminator;
-            result.BaseUrl = this.BaseUrl;
-            result.SuppressHandlerScope = this.SuppressHandlerScope;
-            result.Credentials = this.Credentials;
-            result.PrimaryConfigure.AddRange(this.PrimaryConfigure);
-            result.AdditionalConfigure.AddRange(this.AdditionalConfigure);
+            var result = new HttpClientConfiguration {
+                Name = this.Name,
+                Discriminator = this.Discriminator,
+                BaseAddress = this.BaseAddress,
+                SuppressHandlerScope = this.SuppressHandlerScope,
+                Credentials = this.Credentials
+            };
+            result.PrimaryHandlerConfigurations.AddRange(this.PrimaryHandlerConfigurations);
+            result.AdditionalHandlerConfigurations.AddRange(this.AdditionalHandlerConfigurations);
             if (this._AdditionalProperties != null) {
                 foreach (var kv in this._AdditionalProperties) {
                     result.AdditionalProperties.Add(kv.Key, kv.Value);
@@ -51,7 +73,7 @@
             if (ReferenceEquals(this, other)) { return true; }
             return
                 (string.Equals(this.Name, other.Name, StringComparison.Ordinal))
-                && (string.Equals(this.BaseUrl, other.BaseUrl, StringComparison.Ordinal))
+                && (string.Equals(this.BaseAddress, other.BaseAddress, StringComparison.Ordinal))
                 && (string.Equals(this.Discriminator, other.Discriminator, StringComparison.Ordinal))
                 ;
         }
@@ -65,7 +87,7 @@
             unchecked {
                 return
                     ((this.Name ?? string.Empty).GetHashCode())
-                    ^ ((this.BaseUrl ?? string.Empty).GetHashCode() << 7)
+                    ^ ((this.BaseAddress ?? string.Empty).GetHashCode() << 7)
                     ^ ((this.Discriminator ?? string.Empty).GetHashCode() << 14)
                     ;
             }

@@ -2,24 +2,31 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using Microsoft.Extensions.Logging;
 
+    /// <summary>Builder for the HttpMessageHandle - stack.</summary>
     public class HttpMessageHandlerBuilder : IHttpMessageHandlerBuilder {
-
+        /// <summary>ctor</summary>
+        /// <param name="services">the services</param>
         public HttpMessageHandlerBuilder(IServiceProvider services) {
             this.Services = services;
             this.AdditionalHandlers = new List<DelegatingHandler>();
         }
+
+        /// <inheritdoc/>
         public IServiceProvider Services { get; }
 
+        /// <inheritdoc/>
         public HttpClientConfiguration Configuration { get; private set; }
 
-        public HttpMessageHandler PrimaryHandler { get; set; }
+        /// <inheritdoc/>
+        public HttpClientHandler PrimaryHandler { get; set; }
 
+        /// <inheritdoc/>
         public List<DelegatingHandler> AdditionalHandlers { get; }
 
-        /// <summary>Get the current <see cref="PrimaryHandler"/> or a new <see cref="HttpClientHandler"/>.</summary>
-        /// <returns>a old or new instance not null.</returns>
-        public HttpMessageHandler EnsurePrimaryHandler() {
+        /// <inheritdoc/>
+        public HttpClientHandler EnsurePrimaryHandler() {
             var primaryHandler = this.PrimaryHandler;
             if (primaryHandler == null) {
                 primaryHandler = new HttpClientHandler();
@@ -28,28 +35,32 @@
             return primaryHandler;
         }
 
+        /// <inheritdoc/>
         public void SetConfiguration(HttpClientConfiguration configuration) {
             this.Configuration = configuration;
         }
 
+        /// <inheritdoc/>
         public virtual void ApplyConfig() {
-            foreach (var action in this.Configuration.PrimaryConfigure) {
+            foreach (var action in this.Configuration.PrimaryHandlerConfigurations) {
                 if (action != null) {
                     action(this);
                 }
             }
-            foreach (var action in this.Configuration.AdditionalConfigure) {
+            foreach (var action in this.Configuration.AdditionalHandlerConfigurations) {
                 if (action != null) {
                     action(this);
                 }
             }
         }
 
-        public virtual HttpMessageHandler Build() {
+        /// <inheritdoc/>
+        public virtual HttpMessageHandler Build(ILogger logger) {
             var primaryHandler = this.EnsurePrimaryHandler();
+                        
+            HttpMessageHandler next = new HttpMessageHandlerLogging(logger, primaryHandler);
             var additionalHandlers = this.AdditionalHandlers.ToArray();
 
-            var next = primaryHandler;
             for (int idx = additionalHandlers.Length - 1; idx >= 0; idx--) {
                 var handler = additionalHandlers[idx];
                 if (handler == null) {
