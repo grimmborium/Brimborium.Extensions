@@ -45,7 +45,7 @@
             }
             var trigger = new DisposeRecycleHandler(handler, this);
             var httpClient = new HttpClient(trigger, true);
-            if (string.IsNullOrEmpty(this._Configuration.BaseAddress)) {
+            if (!string.IsNullOrEmpty(this._Configuration.BaseAddress)) {
                 httpClient.BaseAddress = new Uri(this._Configuration.BaseAddress);
             }
             foreach (var action in this._Configuration.HttpClientConfigurations) {
