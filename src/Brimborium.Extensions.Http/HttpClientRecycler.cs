@@ -1,9 +1,10 @@
 ﻿namespace Brimborium.Extensions.Http {
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Net.Http;
     using System.Threading;
+
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>Controlls the creating and disposing of the HttpClient and HttpMessageHandler stack.</summary>
     public class HttpClientRecycler {
