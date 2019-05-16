@@ -74,8 +74,8 @@
 
                 var loggerName = this._Configuration.Name;
                 //
-                var outerLogger = this._LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
-                var innerLogger = this._LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
+                var outerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
+                var innerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
 
                 var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
                 builder.SetConfiguration(this._Configuration);
@@ -84,7 +84,6 @@
                 
                 var handler = new ReuseRecycleHandler(
                     messageHandler,
-                    this._Configuration,
                     scope,
                     outerLogger
                     );

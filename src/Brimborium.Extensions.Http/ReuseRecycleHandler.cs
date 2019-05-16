@@ -14,7 +14,6 @@
     /// This is the first handler that will be reused.
     /// </summary>
     public class ReuseRecycleHandler : DelegatingHandler, IDisposable {
-        private readonly HttpClientConfiguration _Configuration;
         private readonly ILogger _Logger;
         private IServiceScope _Scope;
 
@@ -22,14 +21,12 @@
         /// <param name="innerHandler">the next inner handler.</param>
         /// <param name="configuration">the configuration to use</param>
         /// <param name="scope">the scope.</param>
-        /// <param name="logger">the logger.</param>
+        /// <param name="logger">the logger - can be null.</param>
         public ReuseRecycleHandler(
             HttpMessageHandler innerHandler,
-            HttpClientConfiguration configuration,
             IServiceScope scope,
             ILogger logger
             ) : base(innerHandler) {
-            this._Configuration = configuration;
             this._Scope = scope;
             this._Logger = logger;
         }
@@ -77,32 +74,40 @@
                 "End processing HTTP request after {ElapsedMilliseconds}ms - {StatusCode}");
 
             public static IDisposable BeginRequestPipelineScope(ILogger logger, HttpRequestMessage request) {
-                return _beginRequestPipelineScope(logger, request.Method, request.RequestUri);
+                if ((object)logger != null) {
+                    return _beginRequestPipelineScope(logger, request.Method, request.RequestUri);
+                } else {
+                    return null;
+                }
             }
 
             public static void RequestPipelineStart(ILogger logger, HttpRequestMessage request) {
-                _requestPipelineStart(logger, request.Method, request.RequestUri, null);
+                if ((object)logger != null) {
+                    _requestPipelineStart(logger, request.Method, request.RequestUri, null);
 
-                if (logger.IsEnabled(LogLevel.Trace)) {
-                    logger.Log(
-                        LogLevel.Trace,
-                        EventIds.RequestHeader,
-                        new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Request, request.Headers, request.Content?.Headers),
-                        null,
-                        (state, ex) => state.ToString());
+                    if (logger.IsEnabled(LogLevel.Trace)) {
+                        logger.Log(
+                            LogLevel.Trace,
+                            EventIds.RequestHeader,
+                            new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Request, request.Headers, request.Content?.Headers),
+                            null,
+                            (state, ex) => state.ToString());
+                    }
                 }
             }
 
             public static void RequestPipelineEnd(ILogger logger, HttpResponseMessage response, TimeSpan duration) {
-                _requestPipelineEnd(logger, duration.TotalMilliseconds, response.StatusCode, null);
+                if ((object)logger != null) {
+                    _requestPipelineEnd(logger, duration.TotalMilliseconds, response.StatusCode, null);
 
-                if (logger.IsEnabled(LogLevel.Trace)) {
-                    logger.Log(
-                        LogLevel.Trace,
-                        EventIds.ResponseHeader,
-                        new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Response, response.Headers, response.Content?.Headers),
-                        null,
-                        (state, ex) => state.ToString());
+                    if (logger.IsEnabled(LogLevel.Trace)) {
+                        logger.Log(
+                            LogLevel.Trace,
+                            EventIds.ResponseHeader,
+                            new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Response, response.Headers, response.Content?.Headers),
+                            null,
+                            (state, ex) => state.ToString());
+                    }
                 }
             }
         }

@@ -52,28 +52,32 @@ namespace Brimborium.Extensions.Http {
                 "Received HTTP response after {ElapsedMilliseconds}ms - {StatusCode}");
 
             public static void RequestStart(ILogger logger, HttpRequestMessage request) {
-                _requestStart(logger, request.Method, request.RequestUri, null);
+                if ((object)logger != null) {
+                    _requestStart(logger, request.Method, request.RequestUri, null);
 
-                if (logger.IsEnabled(LogLevel.Trace)) {
-                    logger.Log(
-                        LogLevel.Trace,
-                        EventIds.RequestHeader,
-                        new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Request, request.Headers, request.Content?.Headers),
-                        null,
-                        (state, ex) => state.ToString());
+                    if (logger.IsEnabled(LogLevel.Trace)) {
+                        logger.Log(
+                            LogLevel.Trace,
+                            EventIds.RequestHeader,
+                            new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Request, request.Headers, request.Content?.Headers),
+                            null,
+                            (state, ex) => state.ToString());
+                    }
                 }
             }
 
             public static void RequestEnd(ILogger logger, HttpResponseMessage response, TimeSpan duration) {
-                _requestEnd(logger, duration.TotalMilliseconds, response.StatusCode, null);
+                if ((object)logger != null) {
+                    _requestEnd(logger, duration.TotalMilliseconds, response.StatusCode, null);
 
-                if (logger.IsEnabled(LogLevel.Trace)) {
-                    logger.Log(
-                        LogLevel.Trace,
-                        EventIds.ResponseHeader,
-                        new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Response, response.Headers, response.Content?.Headers),
-                        null,
-                        (state, ex) => state.ToString());
+                    if (logger.IsEnabled(LogLevel.Trace)) {
+                        logger.Log(
+                            LogLevel.Trace,
+                            EventIds.ResponseHeader,
+                            new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Response, response.Headers, response.Content?.Headers),
+                            null,
+                            (state, ex) => state.ToString());
+                    }
                 }
             }
         }
