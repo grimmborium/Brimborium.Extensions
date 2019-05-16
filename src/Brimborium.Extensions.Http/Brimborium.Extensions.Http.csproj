@@ -1,16 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp2.2;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.2;net461</TargetFrameworks>        
     <Authors>Florian Grimm</Authors>
     <Company />
     <Product>Brimborium.Extensions</Product>
     <Description>The HttpClientGenerator is a factory for HttpClient. The configuration is dynamic not bound the boot time.
 This is called generator to avoid confusion / naming clash with HttpClientFactory.</Description>
     <Copyright>Florian Grimm</Copyright>
+    <PackageSummary>The HttpClientGenerator is a factory for HttpClient.</PackageSummary>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl></PackageProjectUrl>
-    <PackageIconUrl>https://github.com/grimmborium/Brimborium.Extensions/blob/master/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/grimmborium/Brimborium.Extensions</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/grimmborium/Brimborium.Extensions/master/logo.png</PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/grimmborium/Brimborium.Extensions</RepositoryUrl>
+    <AssetTargetFallback>$(PackageTargetFallback);netstandard2.0</AssetTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,5 +34,16 @@ This is called generator to avoid confusion / naming clash with HttpClientFactor
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-
+  <Target Name="SetNuspecProperties" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <NuspecProperties>$(NuspecProperties);id=$(AssemblyName)</NuspecProperties>
+      <NuspecProperties>$(NuspecProperties);config=$(Configuration)</NuspecProperties>
+      <NuspecProperties>$(NuspecProperties);version=$(PackageVersion)</NuspecProperties>
+      <NuspecProperties>$(NuspecProperties);description=$(Description)</NuspecProperties>
+      <NuspecProperties>$(NuspecProperties);authors=$(Authors)</NuspecProperties>
+      <NuspecProperties>$(NuspecProperties);summary=$(PackageSummary)</NuspecProperties>
+      
+    </PropertyGroup>
+    <Message Importance="high" Text="NuspecProperties: $(NuspecProperties)" />
+  </Target>
 </Project>
