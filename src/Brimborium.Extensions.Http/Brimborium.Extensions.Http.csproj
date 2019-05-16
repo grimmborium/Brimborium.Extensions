@@ -1,8 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Brimborium.Extensions.Shared\NonCapturingTimer.cs" Link="NonCapturingTimer.cs" />
+    <Compile Include="..\Brimborium.Extensions.Shared\ValueStopwatch.cs" Link="ValueStopwatch.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />

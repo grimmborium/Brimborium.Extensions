@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Http.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.SpreadScope.Test", "test\Brimborium.Extensions.SpreadScope.Test\Brimborium.Extensions.SpreadScope.Test.csproj", "{29FC4758-D72D-4D51-9017-DD81A28B92C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.Shared", "src\Brimborium.Extensions.Shared\Brimborium.Extensions.Shared.csproj", "{14FE47C2-15C3-402F-849F-787FBB05EDAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{29FC4758-D72D-4D51-9017-DD81A28B92C3}.Release|x64.Build.0 = Release|Any CPU
 		{29FC4758-D72D-4D51-9017-DD81A28B92C3}.Release|x86.ActiveCfg = Release|Any CPU
 		{29FC4758-D72D-4D51-9017-DD81A28B92C3}.Release|x86.Build.0 = Release|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Debug|x64.Build.0 = Debug|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Debug|x86.Build.0 = Debug|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Release|x64.ActiveCfg = Release|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Release|x64.Build.0 = Release|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Release|x86.ActiveCfg = Release|Any CPU
+		{14FE47C2-15C3-402F-849F-787FBB05EDAE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

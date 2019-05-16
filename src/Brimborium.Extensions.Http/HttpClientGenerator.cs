@@ -23,8 +23,8 @@
             this._Recyclers = new ConcurrentDictionary<HttpClientConfiguration, HttpClientRecycler>();
             this.Configurations = new ConcurrentDictionary<string, HttpClientConfiguration>(StringComparer.Ordinal);
 
-            this.Services = services;
-            this.ScopeFactory = scopeFactory;
+            this.Services = services ?? throw new ArgumentNullException(nameof(services));
+            this.ScopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
             this.LoggerFactory = loggerFactory;
 
             if (options?.Value != null) {

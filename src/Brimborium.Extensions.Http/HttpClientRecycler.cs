@@ -27,8 +27,8 @@
             ILoggerFactory loggerFactory,
             HttpClientConfiguration configuration
             ) {
-            this._Services = services;
-            this._ScopeFactory = scopeFactory;
+            this._Services = services ?? throw new ArgumentNullException(nameof(services));
+            this._ScopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
             this._LoggerFactory = loggerFactory;
             this._Configuration = configuration;
         }
