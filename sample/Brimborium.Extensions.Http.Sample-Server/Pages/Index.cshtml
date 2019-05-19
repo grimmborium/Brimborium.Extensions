@@ -1,0 +1,15 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Hello page";
+}
+
+<div>
+    Hello @(
+        (this.Request.Headers.FirstOrDefault(header => header.Key == "X-Name").Value.FirstOrDefault())
+        ?? ("World")
+    )
+</div>
+<div>
+    @((this.HttpContext.User.Identity.IsAuthenticated) ? (this.HttpContext.User.Identity.Name) : "anonymus")
+</div>
