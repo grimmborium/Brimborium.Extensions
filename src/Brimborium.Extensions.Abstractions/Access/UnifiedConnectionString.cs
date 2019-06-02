@@ -1,14 +1,15 @@
 ﻿namespace Brimborium.Extensions.Access {
     using Brimborium.Extensions.Freezable;
-    using Newtonsoft.Json;
+
+    using Newtonsoft.Json; // TODO: remove dependency - any idea for an abstraction?? or remove the parse method??
+
     using System;
 
     /// <summary>
-    /// Repository ConnectionString
+    /// A ConnectionString.
     /// </summary>
-    /// <seealso cref="Brimborium.Freezable.FreezableObject" />
-    [System.Diagnostics.DebuggerDisplay("RCS:{Name};{Url};{User}")]
-    public class UnifiedConnectionString : FreezableObject {
+    [System.Diagnostics.DebuggerDisplay("UCS:{Name};{Url};{User}")]
+    public class UnifiedConnectionString : FreezableObject, IUnifiedConnectionString {
         /// <summary>
         /// Parses the specified connection string.
         /// </summary>
@@ -55,7 +56,7 @@
                 this.Password = src.Password;
             }
         }
-        
+
         /// <summary>
         /// Copies this and sets the specified name.
         /// </summary>
@@ -63,13 +64,7 @@
         /// <returns>a copy of this</returns>
         public virtual UnifiedConnectionString Copy(string name) {
             var result = new UnifiedConnectionString(this);
-            if ((object)name == null) {
-                // OK
-                /*
-                } else if (string.Equals(this.Name, name, StringComparison.Ordinal)) {
-                    // OK
-                */
-            } else {
+            if ((object)name != null) {
                 result.Name = name;
             }
             return result;
@@ -81,7 +76,7 @@
             get => this._Name; set => this.SetStringProperty(ref this._Name, value);
         }
 
-        /// <summary>the authentication mode e.g. SQL or SPOIDCRL</summary>
+        /// <summary>the authentication mode e.g. Windows, Basic, ...</summary>
         [JsonProperty(Order = 2)]
         public virtual string AuthenticationMode {
             get => this._AuthenticationMode; set => this.SetStringProperty(ref this._AuthenticationMode, value);
@@ -93,7 +88,7 @@
             get => this._Url; set => this.SetStringProperty(ref this._Url, value);
         }
 
-        /// <summary>the suffix for a http url e.g. _api/projectdata/[en-us].</summary>
+        /// <summary>the suffix for a http url e.g. api.</summary>
         [JsonProperty(Order = 4)]
         public virtual string Suffix {
             get => this._Suffix; set => this.SetStringProperty(ref this._Suffix, value);
@@ -105,14 +100,15 @@
             get => this._SecretKey; set => this.SetStringProperty(ref this._SecretKey, value);
         }
 
-        /// <summary>Username / AppId.</summary>
+        /// <summary>Username.</summary>
         [JsonProperty(Order = 6)]
         public virtual string User {
             get => this._User; set => this.SetStringProperty(ref this._User, value);
         }
 
-        /// <summary>Password / ClientSecret.</summary>
+        /// <summary>Password.</summary>
         [JsonProperty(Order = 7)]
+        [System.Diagnostics.DebuggerDisplay("***")]
         [Brimborium.Extensions.Destructurama.Attributed.LogMasked(PreserveLength = false, ShowFirst = 1, ShowLast = 1, Text = "...")]
         public virtual string Password {
             get => this._Password; set => this.SetStringProperty(ref this._Password, value);
@@ -131,20 +127,20 @@
                 && string.Equals(cache.Item2, this.Suffix, StringComparison.Ordinal)
                 ) {
                 var result = cache.Item3;
-                if (appendSlash) { result = result + "/"; }
+                if (appendSlash) { result += "/"; }
                 return result;
             }
             if (string.IsNullOrEmpty(this.Suffix)) {
                 var result = (this.Url ?? string.Empty).TrimEnd('/');
                 this._GetUrlNormalizedCache = Tuple.Create(this.Url, this.Suffix, result);
-                if (appendSlash) { result = result + "/"; }
+                if (appendSlash) { result += "/"; }
                 return result;
             } else {
                 var result = (
                                 (this.Url ?? string.Empty).TrimEnd('/') + "/" + (this.Suffix ?? string.Empty).Trim('/')
                             ).TrimEnd('/');
                 this._GetUrlNormalizedCache = Tuple.Create(this.Url, this.Suffix, result);
-                if (appendSlash) { result = result + "/"; }
+                if (appendSlash) { result += "/"; }
                 return result;
             }
         }
@@ -198,24 +194,7 @@
                 Formatting = Formatting.None,
                 NullValueHandling = NullValueHandling.Ignore
             });
-            if (json == "{}") { return null; }
             return json;
-        }
-
-        /// <summary>
-        /// Sets the authentication mode if not set.
-        /// </summary>
-        /// <param name="authenticationMode">The authentication mode.</param>
-        public void SetAuthenticationModeIfNotSet(string authenticationMode) {
-            if (string.IsNullOrEmpty(this._AuthenticationMode)) {
-                this.AuthenticationMode = authenticationMode;
-            }
-        }
-
-
-        public string GetAsSqlConnectionString() {
-#warning TODO
-            throw new NotImplementedException();
         }
     }
 }

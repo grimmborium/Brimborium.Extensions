@@ -5,7 +5,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entity\FreezableDictionaryTypeIMetaEntity.cs" />
+    <Compile Remove="Entity\HierarchicalName.cs" />
+    <Compile Remove="Entity\IAccessor.cs" />
+    <Compile Remove="Entity\IEntity.cs" />
+    <Compile Remove="Entity\IEntityFactory.cs" />
+    <Compile Remove="Entity\IEntityFlexible.cs" />
+    <Compile Remove="Entity\IEntityOperation.cs" />
+    <Compile Remove="Entity\IMetaEntity.cs" />
+    <Compile Remove="Entity\IMetaIndexedProperty.cs" />
+    <Compile Remove="Entity\IMetaProperty.cs" />
+    <Compile Remove="Entity\PropertyHelper.cs" />
+    <Compile Remove="Entity\StaticEntity.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Freezeable\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Entity\FreezableDictionaryTypeIMetaEntity.cs" />
+    <None Include="Entity\HierarchicalName.cs" />
+    <None Include="Entity\IAccessor.cs" />
+    <None Include="Entity\IEntity.cs" />
+    <None Include="Entity\IEntityFactory.cs" />
+    <None Include="Entity\IEntityFlexible.cs" />
+    <None Include="Entity\IEntityOperation.cs" />
+    <None Include="Entity\IMetaEntity.cs" />
+    <None Include="Entity\IMetaIndexedProperty.cs" />
+    <None Include="Entity\IMetaProperty.cs" />
+    <None Include="Entity\PropertyHelper.cs" />
+    <None Include="Entity\StaticEntity.cs" />
   </ItemGroup>
 
   <ItemGroup>

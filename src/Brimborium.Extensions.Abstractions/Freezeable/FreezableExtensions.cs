@@ -3,7 +3,6 @@ namespace Brimborium.Extensions.Freezable {
     using System.Runtime.CompilerServices;
 
     public static class FreezableExtensions {
-
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static T AsFrozen<T>(this T that)
             where T : IFreezable {
@@ -37,18 +36,71 @@ namespace Brimborium.Extensions.Freezable {
             }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void SetOrThrowIfFrozen<T>(this IFreezable that, ref T target, T value, string name = null) {
-            if ((object)that != null) {
-                if (that.IsFrozen()) {
-                    if (name is null) {
-                        throw new InvalidOperationException($"{that.GetType().FullName} is frozen.");
-                    } else {
-                        throw new InvalidOperationException($"{name} is frozen.");
-                    }
-                }
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool SetRefProperty<TProperty>(this IFreezable that, ref TProperty thisProperty, TProperty value)
+            where TProperty : class {
+            if (ReferenceEquals(thisProperty, value)) { return false; }
+            that.ThrowIfFrozen();
+            thisProperty = value;
+            return true;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool SetValueProperty<TProperty>(this IFreezable that, ref TProperty thisProperty, TProperty value)
+            where TProperty : struct {
+            if (thisProperty.Equals(value)) { return false; }
+            that.ThrowIfFrozen();
+            thisProperty = value;
+            return true;
+        }
+
+
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool SetValueProperty<TProperty>(this IFreezable that, ref Nullable<TProperty> thisProperty, Nullable<TProperty> value)
+            where TProperty : struct {
+            if(thisProperty.HasValue && value.HasValue && thisProperty.Value.Equals(value.Value)) { return false; }
+            if (!thisProperty.HasValue && !value.HasValue) { return false; }
+            that.ThrowIfFrozen();
+            thisProperty = value;
+            return true;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool SetStringProperty(this IFreezable that, ref string thisProperty, string value) {
+            if (value == string.Empty) { value = null; }
+            if (ReferenceEquals(thisProperty, value)) { return false; }
+            if (string.Equals(thisProperty, value, System.StringComparison.Ordinal)) { return false; }
+            that.ThrowIfFrozen();
+            thisProperty = value;
+            return true;
+        }
+
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool SetRefPropertyOnce<TProperty>(this IFreezable that, ref TProperty thisProperty, TProperty value, [CallerMemberName]string callerMemberName = null)
+            where TProperty : class {
+            if (ReferenceEquals(thisProperty, value)) { return false; }
+            if ((object)thisProperty != null) {
+                throw new System.ArgumentException($"{that.GetType().Name}.{callerMemberName} is already set.");
             }
-            target = value;
+            thisProperty = value;
+            return true;
+        }
+
+
+#if later                
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        protected bool SetOwner<TOwner>(ref TOwner thisPropertyOwner, TOwner value)
+            where TOwner : class {
+            if (ReferenceEquals(thisPropertyOwner, value)) { return false; }
+            if (!(thisPropertyOwner is null)) { this.ThrowIfFrozen(); }
+            thisPropertyOwner = value;
+            return true;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
@@ -141,5 +193,10 @@ namespace Brimborium.Extensions.Freezable {
             return true;
         }
 
+    public interface IObjectWithOwner<TOwner>
+        where TOwner : class {
+        TOwner Owner { get; set; }
+    }
+#endif
     }
 }

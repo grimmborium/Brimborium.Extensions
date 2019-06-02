@@ -7,7 +7,7 @@
         /// <summary>
         /// Gets the authentication mode.
         /// </summary>
-        /// <returns>a text which defines the auth mode .e.g SPIDCRL, Trampolin.</returns>
+        /// <returns>a text which defines the auth mode .e.g Basic, Windows, ....</returns>
         string GetAuthenticationMode();
 
         /// <summary>

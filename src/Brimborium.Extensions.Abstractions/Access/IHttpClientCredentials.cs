@@ -4,9 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    /// <summary>
-    /// think of
-    /// </summary>
+    /// <summary>think of - how will the client use this??</summary>
     public interface IHttpClientCredentials : ICredentials {
         /// <summary>Sets the credentials asynchronous.</summary>
         /// <param name="client">The http client.</param>
