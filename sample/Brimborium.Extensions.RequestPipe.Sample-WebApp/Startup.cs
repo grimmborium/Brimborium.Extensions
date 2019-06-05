@@ -25,6 +25,7 @@ namespace Brimborium.Extensions.RequestPipe.Sample_WebApp {
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddRequestPipe();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env) {

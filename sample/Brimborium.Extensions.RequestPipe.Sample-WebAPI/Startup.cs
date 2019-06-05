@@ -21,6 +21,7 @@
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddRequestPipe();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env) {

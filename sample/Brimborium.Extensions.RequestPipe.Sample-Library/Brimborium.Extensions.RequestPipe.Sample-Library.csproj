@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Brimborium.Extensions.RequestPipe.Sample_Library</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Brimborium.Extensions.RequestPipe\Brimborium.Extensions.RequestPipe.csproj" />
+  </ItemGroup>
+
+</Project>
