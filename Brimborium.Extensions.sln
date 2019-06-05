@@ -15,18 +15,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Abstractions", "src\Brimborium.Extensions.Abstractions\Brimborium.Extensions.Abstractions.csproj", "{3EA89E11-4741-41FF-8639-6B437DCE5315}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.Entity", "src\Brimborium.Extensions.Entity\Brimborium.Extensions.Entity.csproj", "{4B4EC259-C2E7-49D7-A065-A4A11656B662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Entity", "src\Brimborium.Extensions.Entity\Brimborium.Extensions.Entity.csproj", "{4B4EC259-C2E7-49D7-A065-A4A11656B662}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.Sql", "src\Brimborium.Extensions.Sql\Brimborium.Extensions.Sql.csproj", "{EE7EB563-B735-4542-BE56-8408E7F622D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Sql", "src\Brimborium.Extensions.Sql\Brimborium.Extensions.Sql.csproj", "{EE7EB563-B735-4542-BE56-8408E7F622D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.Http.Sample-Client", "sample\Brimborium.Extensions.Http.Sample-Client\Brimborium.Extensions.Http.Sample-Client.csproj", "{E790AB4E-F01C-4EAE-80C6-B844FAE73E05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Http.Sample-Client", "sample\Brimborium.Extensions.Http.Sample-Client\Brimborium.Extensions.Http.Sample-Client.csproj", "{E790AB4E-F01C-4EAE-80C6-B844FAE73E05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.Http.Sample-Server", "sample\Brimborium.Extensions.Http.Sample-Server\Brimborium.Extensions.Http.Sample-Server.csproj", "{B2BE041D-B7D8-4544-A66A-62699A84AC32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Http.Sample-Server", "sample\Brimborium.Extensions.Http.Sample-Server\Brimborium.Extensions.Http.Sample-Server.csproj", "{B2BE041D-B7D8-4544-A66A-62699A84AC32}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F74A1FA7-2F32-4248-A55F-93D2803A5009}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe", "src\Brimborium.Extensions.RequestPipe\Brimborium.Extensions.RequestPipe.csproj", "{13D27879-556F-4A8E-B86B-00684A356F42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.Sample-WebApp", "sample\Brimborium.Extensions.RequestPipe.Sample-WebApp\Brimborium.Extensions.RequestPipe.Sample-WebApp.csproj", "{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.Sample-WebAPI", "sample\Brimborium.Extensions.RequestPipe.Sample-WebAPI\Brimborium.Extensions.RequestPipe.Sample-WebAPI.csproj", "{EA3A8C70-0DE6-4132-AE09-824D76E44F01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +164,42 @@ Global
 		{B2BE041D-B7D8-4544-A66A-62699A84AC32}.Release|x64.Build.0 = Release|Any CPU
 		{B2BE041D-B7D8-4544-A66A-62699A84AC32}.Release|x86.ActiveCfg = Release|Any CPU
 		{B2BE041D-B7D8-4544-A66A-62699A84AC32}.Release|x86.Build.0 = Release|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Debug|x64.Build.0 = Debug|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Debug|x86.Build.0 = Debug|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Release|x64.ActiveCfg = Release|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Release|x64.Build.0 = Release|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Release|x86.ActiveCfg = Release|Any CPU
+		{13D27879-556F-4A8E-B86B-00684A356F42}.Release|x86.Build.0 = Release|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Debug|x64.Build.0 = Debug|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Debug|x86.Build.0 = Debug|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Release|x64.ActiveCfg = Release|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Release|x64.Build.0 = Release|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Release|x86.ActiveCfg = Release|Any CPU
+		{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}.Release|x86.Build.0 = Release|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Release|x64.Build.0 = Release|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA3A8C70-0DE6-4132-AE09-824D76E44F01}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
