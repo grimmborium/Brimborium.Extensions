@@ -28,17 +28,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe", "src\Brimborium.Extensions.RequestPipe\Brimborium.Extensions.RequestPipe.csproj", "{13D27879-556F-4A8E-B86B-00684A356F42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.RequestPipe", "src\Brimborium.Extensions.RequestPipe\Brimborium.Extensions.RequestPipe.csproj", "{13D27879-556F-4A8E-B86B-00684A356F42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.Sample-WebApp", "sample\Brimborium.Extensions.RequestPipe.Sample-WebApp\Brimborium.Extensions.RequestPipe.Sample-WebApp.csproj", "{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.RequestPipe.Sample-WebApp", "sample\Brimborium.Extensions.RequestPipe.Sample-WebApp\Brimborium.Extensions.RequestPipe.Sample-WebApp.csproj", "{0AB850BD-0352-4B12-B7FD-0CB10FB7CD66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.Sample-WebAPI", "sample\Brimborium.Extensions.RequestPipe.Sample-WebAPI\Brimborium.Extensions.RequestPipe.Sample-WebAPI.csproj", "{EA3A8C70-0DE6-4132-AE09-824D76E44F01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.RequestPipe.Sample-WebAPI", "sample\Brimborium.Extensions.RequestPipe.Sample-WebAPI\Brimborium.Extensions.RequestPipe.Sample-WebAPI.csproj", "{EA3A8C70-0DE6-4132-AE09-824D76E44F01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.Test", "test\Brimborium.Extensions.RequestPipe.Test\Brimborium.Extensions.RequestPipe.Test.csproj", "{FFCEB05E-8760-46C7-A4EE-CB2B85126BF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.RequestPipe.Test", "test\Brimborium.Extensions.RequestPipe.Test\Brimborium.Extensions.RequestPipe.Test.csproj", "{FFCEB05E-8760-46C7-A4EE-CB2B85126BF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.Sample-Library", "sample\Brimborium.Extensions.RequestPipe.Sample-Library\Brimborium.Extensions.RequestPipe.Sample-Library.csproj", "{EF69A285-EB44-44B0-BB00-0EE5C674A9B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.RequestPipe.Sample-Library", "sample\Brimborium.Extensions.RequestPipe.Sample-Library\Brimborium.Extensions.RequestPipe.Sample-Library.csproj", "{EF69A285-EB44-44B0-BB00-0EE5C674A9B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.RequestPipe.AspNetCore", "src\Brimborium.Extensions.RequestPipe.AspNetCore\Brimborium.Extensions.RequestPipe.AspNetCore.csproj", "{A37F01D3-14C2-4EC5-8826-E3D0E93D83AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.RequestPipe.AspNetCore", "src\Brimborium.Extensions.RequestPipe.AspNetCore\Brimborium.Extensions.RequestPipe.AspNetCore.csproj", "{A37F01D3-14C2-4EC5-8826-E3D0E93D83AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.LogInside", "src\Brimborium.Extensions.LogInside\Brimborium.Extensions.LogInside.csproj", "{C1C939D0-3831-4140-B578-B08A9E54DB24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.LogInside.Test", "test\Brimborium.Extensions.LogInside.Test\Brimborium.Extensions.LogInside.Test.csproj", "{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -242,6 +246,30 @@ Global
 		{A37F01D3-14C2-4EC5-8826-E3D0E93D83AF}.Release|x64.Build.0 = Release|Any CPU
 		{A37F01D3-14C2-4EC5-8826-E3D0E93D83AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{A37F01D3-14C2-4EC5-8826-E3D0E93D83AF}.Release|x86.Build.0 = Release|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Debug|x64.Build.0 = Debug|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Debug|x86.Build.0 = Debug|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Release|x64.ActiveCfg = Release|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Release|x64.Build.0 = Release|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Release|x86.ActiveCfg = Release|Any CPU
+		{C1C939D0-3831-4140-B578-B08A9E54DB24}.Release|x86.Build.0 = Release|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Debug|x64.Build.0 = Debug|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Debug|x86.Build.0 = Debug|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Release|x64.ActiveCfg = Release|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Release|x64.Build.0 = Release|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Release|x86.ActiveCfg = Release|Any CPU
+		{96A916F6-3602-4A69-9DB5-1E9CBB3B0699}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
