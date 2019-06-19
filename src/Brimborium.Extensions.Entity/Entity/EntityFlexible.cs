@@ -1,9 +1,9 @@
-﻿using Brimborium.Extensions.Entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Brimborium.Extensions.Entity {
+    using Brimborium.Extensions.Entity;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
 
-namespace Brimborium.Extensions.Entity {
     public class EntityFlexible : IEntityFlexible {
         public EntityFlexible() {
         }

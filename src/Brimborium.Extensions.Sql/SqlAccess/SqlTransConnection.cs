@@ -2,7 +2,7 @@
 
 namespace Brimborium.Extensions.SqlAccess {
     using Brimborium.Extensions;
-    using Brimborium.Extensions.Access;
+    using Brimborium.Extensions.Access;    
     using System;
     using System.Data.SqlClient;
 
@@ -33,7 +33,7 @@ namespace Brimborium.Extensions.SqlAccess {
             }
         }
 
-        public SqlTransConnection(UnifiedConnectionString connectionString) {
+        public SqlTransConnection(IUnifiedConnectionString connectionString) {
             if (connectionString is null) {
                 throw new ArgumentNullException(nameof(connectionString));
             }

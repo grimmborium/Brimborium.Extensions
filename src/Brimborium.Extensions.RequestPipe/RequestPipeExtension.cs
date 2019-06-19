@@ -7,13 +7,23 @@
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public static class RequestPipeExtension {
-        public static IServiceCollection AddRequestPipe(this IServiceCollection services, Action<Options> configure = null) {
+        public static IServiceCollection AddRequestPipe(this IServiceCollection services, Action<RequestPipeOptions> configure = null) {
+            var optionsBuilder = services.AddOptions<RequestPipeOptions>();
             if (configure != null) {
-                services.Configure(configure);
+                optionsBuilder.Configure(configure);
             }
             services.TryAddScoped<IRequestExecutionService, RequestExecutionService>();
 
             return services;
         }
+
+        //public static IServiceCollection AddRequestPipeFor<TOptions>(this IServiceCollection services, Action<TOptions> configure = null)
+        //    where TOptions : RequestPipeOptions, new() {
+        //    if (configure != null) {
+        //        services.Configure(configure);
+        //    }
+        //    services.TryAddScoped<IRequestExecutionService<TOptions>, RequestExecutionService<TOptions>>();
+        //    return services;
+        //}
     }
 }
