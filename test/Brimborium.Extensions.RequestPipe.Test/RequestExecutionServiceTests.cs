@@ -66,9 +66,11 @@ namespace Brimborium.Extensions.RequestPipe {
         [Fact]
         public async Task RequestExecutionService_3_Test() {
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-            services.AddRequestPipe((configure) => {
-                configure.Add<RequestGna, ResponceGna, RequestHandlerGna>();
-            });
+            services.AddRequestPipe(
+                null,
+                (builder) => {
+                    builder.AddTransient<RequestGna, ResponceGna, RequestHandlerGna>();
+                });
             using (var serviceProviderRoot = services.BuildServiceProvider()) {
                 using (var scope = serviceProviderRoot.CreateScope()) {
                     var serviceProviderScope = scope.ServiceProvider;
@@ -78,6 +80,30 @@ namespace Brimborium.Extensions.RequestPipe {
                     Assert.Equal(42, act.Sum);
                 }
             }
+        }
+
+        public class RequestHandlerFour : RequestHandler<RequestGna, ResponceGna> {
+            protected override Task<ResponceGna> HandleAsync(RequestGna request) {
+                var result = request.A + request.B;
+                return Task.FromResult<ResponceGna>(new ResponceGna() { Sum = result });
+            }
+        }
+
+        [Fact]
+        public void RequestExecutionService_4_Test() {
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            services.AddRequestPipe((configure) => {
+            }, (builder) => {
+                builder.AddSingleton<RequestHandlerFour>();
+            });
+            using (var serviceProviderRoot = services.BuildServiceProvider()) {
+                using (var scope = serviceProviderRoot.CreateScope()) {
+                    var serviceProviderScope = scope.ServiceProvider;
+                    var sut = serviceProviderScope.GetRequiredService<IRequestExecutionService>();
+                    Assert.NotNull(sut);
+                }
+            }
+
         }
 
     }
