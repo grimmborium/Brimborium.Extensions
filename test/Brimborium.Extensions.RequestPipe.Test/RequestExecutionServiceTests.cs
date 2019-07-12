@@ -94,7 +94,7 @@ namespace Brimborium.Extensions.RequestPipe {
             var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             services.AddRequestPipe((configure) => {
             }, (builder) => {
-                builder.AddSingleton<RequestHandlerFour>();
+                builder.Add<RequestHandlerFour>();
             });
             using (var serviceProviderRoot = services.BuildServiceProvider()) {
                 using (var scope = serviceProviderRoot.CreateScope()) {
