@@ -14,6 +14,8 @@
     }
 
     public class GetGadgetRequestHandler : IRequestHandler<GetGadgetRequest, GetGadgetResponce> {
+        public void SetOptions(IRequestHandlerOptions options) { }
+
         public Task<GetGadgetResponce> ExecuteAsync(GetGadgetRequest request) {
             var result = new GetGadgetResponce();
             result.Value = new List<Gadget>();

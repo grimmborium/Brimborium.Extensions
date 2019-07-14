@@ -69,7 +69,7 @@ namespace Brimborium.Extensions.RequestPipe {
             services.AddRequestPipe(
                 null,
                 (builder) => {
-                    builder.AddTransient<RequestGna, ResponceGna, RequestHandlerGna>();
+                    builder.Add<RequestGna, ResponceGna, RequestHandlerGna>();
                 });
             using (var serviceProviderRoot = services.BuildServiceProvider()) {
                 using (var scope = serviceProviderRoot.CreateScope()) {

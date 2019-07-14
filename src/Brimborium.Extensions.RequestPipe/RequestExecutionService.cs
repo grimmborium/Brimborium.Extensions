@@ -1,10 +1,9 @@
 ﻿namespace Brimborium.Extensions.RequestPipe {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+
+    using System;
+    using System.Threading.Tasks;
 
     public class RequestExecutionService
         : IRequestExecutionService {
@@ -36,23 +35,6 @@
                 this._Solver = solver;
             }
             return solver;
-        }
-    }
-
-    public class RequestHandlerSolver : IRequestHandlerSolver {
-        private readonly IServiceProvider _ServiceProvider;
-
-        public RequestHandlerSolver(IServiceProvider serviceProvider) {
-            this._ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        }
-
-        public virtual IRequestHandler<IRequest<TResponce>, TResponce> Solve<TResponce>(IRequest<TResponce> request) {
-            var handler = this._ServiceProvider.GetService<IRequestHandler<IRequest<TResponce>, TResponce>>();
-            if (handler is null) {
-                var requestType = request.GetType();
-                var interfaces = requestType.GetInterfaces();
-            }
-            return handler;
         }
     }
 }
