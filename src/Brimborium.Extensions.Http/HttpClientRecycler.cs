@@ -44,6 +44,8 @@
                     }
                 }
             }
+            System.Threading.Interlocked.Increment(ref this._Usage);
+            //
             var trigger = new DisposeRecycleHandler(handler, this);
             var httpClient = new HttpClient(trigger, true);
             if (!string.IsNullOrEmpty(this._Configuration.BaseAddress)) {
@@ -59,8 +61,6 @@
 
         private ReuseRecycleHandler CreateReuseRecycleHandler() {
             // within lock
-            System.Threading.Interlocked.Increment(ref this._Usage);
-            //
             try {
                 var services = this._Services;
                 var scope = (IServiceScope)null;
@@ -114,7 +114,7 @@
         }
 
         private void OnTimer(object state) {
-            if (this._Usage == 0) {
+            if (this._Usage <= 0) {
                 lock (this) {
                     var handler = System.Threading.Interlocked.Exchange(ref this._ReuseRecycleHandler, null);
                     System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();

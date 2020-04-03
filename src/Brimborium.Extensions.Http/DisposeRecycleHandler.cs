@@ -26,6 +26,7 @@
         }
 
         ~DisposeRecycleHandler() {
+            System.GC.SuppressFinalize(this);
             this.Dispose(false);
         }
     }
