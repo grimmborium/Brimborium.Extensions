@@ -1,10 +1,10 @@
 ﻿namespace Brimborium.Extensions.Http {
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+
     using System;
     using System.Net.Http;
     using System.Threading;
-
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>Controlls the creating and disposing of the HttpClient and HttpMessageHandler stack.</summary>
     public class HttpClientRecycler {
@@ -27,13 +27,15 @@
             ILoggerFactory loggerFactory,
             HttpClientConfiguration configuration
             ) {
-            this._Services = services ?? throw new ArgumentNullException(nameof(services));
-            this._ScopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
+            this._Services = services;
+            this._ScopeFactory = scopeFactory;
             this._LoggerFactory = loggerFactory;
             this._Configuration = configuration;
         }
 
         public HttpClient CreateHttpClient() {
+            System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+
             var handler = this._ReuseRecycleHandler;
             if (handler == null) {
                 lock (this) {
@@ -44,9 +46,9 @@
                     }
                 }
             }
-            System.Threading.Interlocked.Increment(ref this._Usage);
-            //
+
             var trigger = new DisposeRecycleHandler(handler, this);
+            System.Threading.Interlocked.Increment(ref this._Usage);
             var httpClient = new HttpClient(trigger, true);
             if (!string.IsNullOrEmpty(this._Configuration.BaseAddress)) {
                 httpClient.BaseAddress = new Uri(this._Configuration.BaseAddress);
@@ -60,7 +62,6 @@
         }
 
         private ReuseRecycleHandler CreateReuseRecycleHandler() {
-            // within lock
             try {
                 var services = this._Services;
                 var scope = (IServiceScope)null;
@@ -74,31 +75,30 @@
 
                 var loggerName = this._Configuration.Name;
                 //
-                var outerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
-                var innerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
+                var outerLogger = this._LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
+                var innerLogger = this._LoggerFactory.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
 
                 var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
                 builder.SetConfiguration(this._Configuration);
                 builder.ApplyConfig();
                 var messageHandler = builder.Build(innerLogger);
-                
+
                 var handler = new ReuseRecycleHandler(
+                    this,
                     messageHandler,
+                    this._Configuration,
                     scope,
                     outerLogger
                     );
 
-                System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
-
                 return handler;
             } catch {
-                System.Threading.Interlocked.Decrement(ref this._Usage);
                 throw;
             }
         }
 
         internal void OnDispose(DisposeRecycleHandler disposeRecycleHandler) {
-            if (System.Threading.Interlocked.Decrement(ref this._Usage) == 0) {
+            if (System.Threading.Interlocked.Decrement(ref this._Usage) <= 0) {
                 // Create Timer
                 lock (this) {
                     if (Volatile.Read(ref this._Timer) == null) {
@@ -114,7 +114,7 @@
         }
 
         private void OnTimer(object state) {
-            if (this._Usage <= 0) {
+            if (this._Usage == 0) {
                 lock (this) {
                     var handler = System.Threading.Interlocked.Exchange(ref this._ReuseRecycleHandler, null);
                     System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
@@ -122,6 +122,41 @@
                 }
             } else {
                 System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+            }
+        }
+        internal IDisposable CreateRefCountLock() {
+            lock (this) {
+                System.Threading.Interlocked.Increment(ref this._Usage);
+
+            }
+            return new ProcessLock((Action)this.DecrementUsage);
+        }
+
+        internal sealed class ProcessLock : IDisposable {
+            private Action _OnDispose;
+
+            public ProcessLock(Action onDispose) {
+                this._OnDispose = onDispose;
+            }
+
+            ~ProcessLock() {
+                var onDispose = System.Threading.Interlocked.Exchange(ref this._OnDispose, null);
+                onDispose?.Invoke();
+            }
+
+            public void Dispose() {
+                System.GC.SuppressFinalize(this);
+                var onDispose = System.Threading.Interlocked.Exchange(ref this._OnDispose, null);
+                onDispose?.Invoke();
+            }
+        }
+
+        internal int Usage => this._Usage;
+
+
+        private void DecrementUsage() {
+            lock (this) {
+                System.Threading.Interlocked.Decrement(ref this._Usage);
             }
         }
     }
