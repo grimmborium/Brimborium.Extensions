@@ -1,33 +1,42 @@
-﻿using Brimborium.Extensions.Abstractions;
+﻿using Brimborium.Extensions.Disposable;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Brimborium.Extensions.Disposable {
+
     public class ActionDispose : TracedDisposable {
         private Action _OnDispose;
+        
+        public ActionDispose(Action onDispose) : this(onDispose, null) { }
 
-        public ActionDispose(Action onDispose) {
-            this._OnDispose = onDispose ?? noop;
+        public ActionDispose(Action onDispose, TracedDisposableControl tracedDisposableControl) : base(tracedDisposableControl) {
+            if (onDispose is object) {
+                this._OnDispose = onDispose;
+            } else {
+                this._OnDispose = Noop;
+                System.GC.SuppressFinalize(this);
+            }
         }
 
         protected override void Dispose(bool disposing) {
-            var onDispose = System.Threading.Interlocked.Exchange(ref _OnDispose, noop);
+            var onDispose = System.Threading.Interlocked.Exchange(ref _OnDispose, Noop);
             onDispose();
         }
 
-        private static void noop() { }
+        ~ActionDispose() {
+            this.ReportFinalized();
+            this.Dispose(disposing: false);
+        }
+        private static void Noop() { }
     }
+
     public class ActionDispose<T1> : TracedDisposable {
         private Action<T1> _OnDispose;
         private T1 _Arg1;
 
         public ActionDispose(Action<T1> onDispose, T1 arg1) {
-            this._OnDispose = onDispose;
-            if (this._OnDispose is null) {
-                this._Arg1 = default;
-            } else { 
+            if (this._OnDispose is object) {
+                this._OnDispose = onDispose;
                 this._Arg1 = arg1;
             }
         }
@@ -41,4 +50,5 @@ namespace Brimborium.Extensions.Disposable {
             }
         }
     }
+
 }

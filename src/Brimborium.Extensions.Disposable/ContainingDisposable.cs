@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Brimborium.Extensions.Abstractions {
+namespace Brimborium.Extensions.Disposable {
     public class ContainingDisposable<T> : TracedDisposable
         where T : class, IDisposable {
         private T _Resource;
@@ -42,6 +42,15 @@ namespace Brimborium.Extensions.Abstractions {
         }
 
         protected T GetResource() => this._Resource;
+
+        protected T ReadResourceAndForget() {
+            var result = this._Resource;
+            if (result is object) {
+                this._Resource = null;
+                System.GC.SuppressFinalize(this);
+            }
+            return this._Resource;
+        }
 
         protected override void Dispose(bool disposing) {
             using (var r = this._Resource) {

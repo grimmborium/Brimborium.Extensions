@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Xunit;
 
-namespace Brimborium.Extensions.Abstractions.Test {
+namespace Brimborium.Extensions.Disposable {
     public class TracedDisposableControlTest {
         [Fact]
         public void T001_GetStackTrace() {
@@ -12,7 +12,7 @@ namespace Brimborium.Extensions.Abstractions.Test {
              */
             var st = TracedDisposableControl.GetStackTrace();
             Assert.StartsWith("TracedDisposableControlTest.T001_GetStackTrace fileName:", st);
-            Assert.Contains(@"Brimborium.Extensions.Abstractions.Test\TracedDisposableControlTest.cs@13:13", st);
+            Assert.Contains(@"Brimborium.Extensions.Disposable.Test\TracedDisposableControlTest.cs@13:13", st);
         }
 
         [Fact]
@@ -60,14 +60,17 @@ namespace Brimborium.Extensions.Abstractions.Test {
             TracedDisposableControl.Instance.SetTraceEnabledForAll(true);
             var reported = new List<ReportFinalizedInfo>();
             TracedDisposableControl.Instance.CurrentReportFinalized = (Action<ReportFinalizedInfo>)reportFinalized;
-            for(int idx =0;idx<100;idx++) {
-                using (var a = new TestTracedDisposable()) {
-                    Assert.NotNull(a.ToString());
-                }
+            for (int idx = 0; idx < 100; idx++) {
+                var a = new TestTracedDisposable();
+                Assert.NotNull(a.ToString());
+                // no Dispose !!
             }
-            System.GC.Collect(2, GCCollectionMode.Forced);
+            //System.GC.Collect(2, GCCollectionMode.Forced);
+            System.GC.Collect();
             System.GC.WaitForPendingFinalizers();
-            Assert.True(reported.Count>0);
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            Assert.True(reported.Count > 90);
 
             void reportFinalized(ReportFinalizedInfo reportFinalizedInfo) {
                 reported.Add(reportFinalizedInfo);

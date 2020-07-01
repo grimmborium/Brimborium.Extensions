@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Brimborium.Extensions.Abstractions {
+namespace Brimborium.Extensions.Disposable {
     public class ResourceDisposable<T> : ContainingDisposable<T>
         where T : class, IDisposable {
 

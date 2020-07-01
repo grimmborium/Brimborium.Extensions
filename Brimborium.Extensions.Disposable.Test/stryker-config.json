@@ -8,16 +8,13 @@
     "log-level": "info",
     "log-file": true,
     "timeout-ms": 10000,
-    "project-file": "ExampleProject.csproj",
+    "project-file": "Brimborium.Extensions.Disposable.csproj",
     "max-concurrent-test-runners": 4,
     "threshold-high": 80,
     "threshold-low": 70,
     "threshold-break": 60,
     "file-patterns": [
-      "!ExampleClass.cs",
-      "!ExampleDirectory",
-      "!ExampleDirectory/ExampleClass2.cs",
-      "!C:\\ExampleRepo\\ExampleDirectory\\ExampleClass.cs"
+      "!InterlockedUtilty.cs"
     ],
     "excluded-mutations": [
     ],

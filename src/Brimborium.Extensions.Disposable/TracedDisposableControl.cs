@@ -3,19 +3,32 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Brimborium.Extensions.Abstractions {
+namespace Brimborium.Extensions.Disposable {
     public class TracedDisposableControl {
         private static TracedDisposableControl _Instance;
         public static TracedDisposableControl Instance => _Instance ?? (_Instance = new TracedDisposableControl());
 
         private bool _IsTraceEnabledForAll = false;
-        private Dictionary<Type, bool> _IsTraceEnabledForType;
+        private Dictionary<Type, bool>? _IsTraceEnabledForType;
 
         public void SetTraceEnabledForAll(bool value) {
             this._IsTraceEnabledForAll = value;
         }
 
         public void SetTraceEnabledForType(System.Type type, bool value) {
+            InterlockedUtilty.SetNextValue(
+                ref this._IsTraceEnabledForType,
+                (type: type, value: value),
+                (Dictionary<Type, bool>? oldDict, (Type type, bool value) arg) => {
+                    var nextDict
+                        = (oldDict is null)
+                            ? new Dictionary<Type, bool>()
+                            : new Dictionary<Type, bool>(oldDict);
+                    nextDict[arg.type] = arg.value;
+                    return nextDict;
+                },
+                null);
+#if weichei
             //for(int watchdog = 1000; watchdog > 0; watchdog--) {
             while (true) {
                 Dictionary<Type, bool> oldDict = this._IsTraceEnabledForType;
@@ -29,6 +42,7 @@ namespace Brimborium.Extensions.Abstractions {
                     return;
                 }
             }
+#endif
         }
 
         public bool IsTraceEnabled(System.Type type) {
@@ -42,9 +56,9 @@ namespace Brimborium.Extensions.Abstractions {
             return false;
         }
 
-        private Action<ReportFinalizedInfo> _CurrentReportFinalized;
+        private Action<ReportFinalizedInfo>? _CurrentReportFinalized;
 
-        public Action<ReportFinalizedInfo> CurrentReportFinalized {
+        public Action<ReportFinalizedInfo>? CurrentReportFinalized {
             get {
                 return this._CurrentReportFinalized;
             }
