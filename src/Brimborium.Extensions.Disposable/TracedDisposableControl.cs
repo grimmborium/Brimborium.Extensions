@@ -9,17 +9,20 @@ namespace Brimborium.Extensions.Disposable {
         public static TracedDisposableControl Instance => _Instance ?? (_Instance = new TracedDisposableControl());
 
         private bool _IsTraceEnabledForAll = false;
-        private Dictionary<Type, bool>? _IsTraceEnabledForType;
+        private Dictionary<Type, bool> _IsTraceEnabledForType;
 
-        public void SetTraceEnabledForAll(bool value) {
+        public void SetTraceEnabledForAll(bool value)
+        {
             this._IsTraceEnabledForAll = value;
         }
 
-        public void SetTraceEnabledForType(System.Type type, bool value) {
+        public void SetTraceEnabledForType(System.Type type, bool value)
+        {
             InterlockedUtilty.SetNextValue(
                 ref this._IsTraceEnabledForType,
                 (type: type, value: value),
-                (Dictionary<Type, bool>? oldDict, (Type type, bool value) arg) => {
+                (Dictionary<Type, bool>? oldDict, (Type type, bool value) arg) =>
+                {
                     var nextDict
                         = (oldDict is null)
                             ? new Dictionary<Type, bool>()
@@ -45,66 +48,98 @@ namespace Brimborium.Extensions.Disposable {
 #endif
         }
 
-        public bool IsTraceEnabled(System.Type type) {
+        public static void ReportFinalized(
+            TracedDisposableControl tracedDisposableControl,
+            ReportFinalizedInfo reportFinalizedInfo)
+        {
+            try
+            {
+                (tracedDisposableControl ?? TracedDisposableControl.Instance)?
+                    .ReportFinalized(reportFinalizedInfo);
+            }
+            catch
+            {
+            }
+        }
+
+        public bool IsTraceEnabled(System.Type type)
+        {
             if (this._IsTraceEnabledForAll) { return true; }
             var dict = this._IsTraceEnabledForType;
-            if (type is object && dict is object) {
-                if (dict.TryGetValue(type, out var result)) {
+            if (type is object && dict is object)
+            {
+                if (dict.TryGetValue(type, out var result))
+                {
                     return result;
                 }
             }
             return false;
         }
 
-        private Action<ReportFinalizedInfo>? _CurrentReportFinalized;
+        private Action<ReportFinalizedInfo> _CurrentReportFinalized;
 
-        public Action<ReportFinalizedInfo>? CurrentReportFinalized {
-            get {
+        public Action<ReportFinalizedInfo> CurrentReportFinalized {
+            get
+            {
                 return this._CurrentReportFinalized;
             }
 
-            set {
+            set
+            {
                 this._CurrentReportFinalized = value;
             }
         }
 
-        public static void DummyReportFinalized(ReportFinalizedInfo reportFinalizedInfo) {
+        public static void DummyReportFinalized(ReportFinalizedInfo reportFinalizedInfo)
+        {
         }
 
-        public void ReportFinalized(ReportFinalizedInfo reportFinalizedInfo) {
-            try {
-                if (this.CurrentReportFinalized != null) {
+        public void ReportFinalized(ReportFinalizedInfo reportFinalizedInfo)
+        {
+            try
+            {
+                if (this.CurrentReportFinalized != null)
+                {
                     this.CurrentReportFinalized(reportFinalizedInfo);
                 }
-            } catch {
+            }
+            catch
+            {
             }
         }
 
-        public static string GetStackTrace() {
+        public static string GetStackTrace()
+        {
             var sb = new StringBuilder();
-            try {
+            try
+            {
                 var st = new StackTrace(1, true);
                 var frames = st.GetFrames();
-                foreach (var frame in frames) {
+                foreach (var frame in frames)
+                {
                     string declaringTypeName = null;
                     string methodName = null;
                     string fileName = null;
                     int lineNumber = 0;
                     int columnNumber = 0;
-                    try {
+                    try
+                    {
                         var method = frame.GetMethod();
                         declaringTypeName = method?.DeclaringType?.Name;
                         methodName = method?.Name;
                         fileName = frame.GetFileName();
                         lineNumber = frame.GetFileLineNumber();
                         columnNumber = frame.GetFileColumnNumber();
-                    } catch { }
+                    }
+                    catch { }
                     sb.Append(declaringTypeName).Append(".").Append(methodName)
                        .Append(" fileName:").Append(fileName).Append("@").Append(lineNumber).Append(":").Append(columnNumber)
                        .AppendLine();
                 }
                 return sb.ToString();
-            } catch {
+            }
+            catch
+            {
                 sb.Append("??").AppendLine();
                 return sb.ToString();
             }

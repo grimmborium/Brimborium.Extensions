@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Brimborium.Extensions.Disposable\Brimborium.Extensions.Disposable.csproj" />
+    <ProjectReference Include="..\..\src\Brimborium.Extensions.Disposable\Brimborium.Extensions.Disposable.csproj" />
   </ItemGroup>
 
 </Project>

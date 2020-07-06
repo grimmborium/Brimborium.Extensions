@@ -14,14 +14,18 @@
     "threshold-low": 70,
     "threshold-break": 60,
     "file-patterns": [
-      "!InterlockedUtilty.cs"
+      "!InterlockedUtilty.cs",
+      "!G:\\github\\grimmborium\\Brimborium.Extensions\\src\\Brimborium.Extensions.Disposable\\InterlockedUtilty.cs"
     ],
     "excluded-mutations": [
     ],
     "ignore-methods": [
       "*Log*",
       "ToString",
-      "*HashCode*"
+      "*HashCode*",
+      "SetNextValue",
+      "BitwiseSet",
+      "BitwiseClear"
     ]
   }
 }

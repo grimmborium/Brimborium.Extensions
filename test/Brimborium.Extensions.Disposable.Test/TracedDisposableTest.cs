@@ -8,6 +8,22 @@ namespace Brimborium.Extensions.Disposable {
         public void TracedDisposable001() {
             int cnt = 0;
             var tdc = new TracedDisposableControl();
+            tdc.CurrentReportFinalized = (rfi) => { cnt++; };
+
+            var sut = new TracedDisposable(tdc);
+            Assert.False(((IDisposableState)sut).IsDisposed());
+            Assert.False(((IDisposableState)sut).IsFinalizeSuppressed());
+            sut.Dispose();
+            Assert.True(((IDisposableState)sut).IsDisposed());
+            Assert.True(((IDisposableState)sut).IsFinalizeSuppressed());
+
+            Assert.Equal(0, cnt);
+        }
+            [Fact]
+        public void TracedDisposable002() {
+
+            int cnt = 0;
+            var tdc = new TracedDisposableControl();
             tdc.SetTraceEnabledForAll(true);
             tdc.CurrentReportFinalized = (rfi) => { cnt++; };
             {
@@ -36,7 +52,7 @@ namespace Brimborium.Extensions.Disposable {
         }
 
         [Fact]
-        public void TracedDisposable002() { }
+        public void TracedDisposable003() { }
     }
 
 }

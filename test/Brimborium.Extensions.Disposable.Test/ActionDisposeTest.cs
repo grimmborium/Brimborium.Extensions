@@ -56,6 +56,7 @@ namespace Brimborium.Extensions.Disposable {
             Assert.Equal(0, cntDisposed);
             Assert.Equal(0, cntFinalized);
         }
+
         [Fact]
         public void ActionDisposeActionWithException() {
             int cntDisposed = 0;
@@ -64,8 +65,8 @@ namespace Brimborium.Extensions.Disposable {
             var tdc = new TracedDisposableControl();
             tdc.SetTraceEnabledForAll(true);
 
-            tdc.CurrentReportFinalized = (rfi) => { cntFinalized++; }; 
-            var sut = new ActionDispose(() => { cntDisposed++; throw new ArgumentException("HUGO"); });
+            tdc.CurrentReportFinalized = (rfi) => { cntFinalized++; };
+            var sut = new ActionDispose(() => { cntDisposed++; throw new ArgumentException("HUGO"); }, tdc);
             try {
                 Assert.Throws<ArgumentException>(() => sut.Dispose());
             } catch {
@@ -74,6 +75,37 @@ namespace Brimborium.Extensions.Disposable {
             Assert.Equal(1, cntDisposed);
         }
 
-    }
+        [Fact]
+        public void ActionDisposeT1NoAction() {
+            int cntDisposed = 0;
+            int cntFinalized = 0;
 
+            var tdc = new TracedDisposableControl();
+            tdc.SetTraceEnabledForAll(true);
+            tdc.CurrentReportFinalized = (rfi) => { cntFinalized++; };
+
+            var sut = new ActionDispose<int>(null, 0, tdc);
+            sut.Dispose(); // no error
+            Assert.Equal(0, cntDisposed);
+            Assert.Equal(0, cntFinalized);
+        }
+
+        [Fact]
+        public void ActionDisposeT1ActionWithException() {
+            int cntDisposed = 0;
+            int cntFinalized = 0;
+
+            var tdc = new TracedDisposableControl();
+            tdc.SetTraceEnabledForAll(true);
+
+            tdc.CurrentReportFinalized = (rfi) => { cntFinalized++; };
+            var sut = new ActionDispose<int>((n) => { cntDisposed++; throw new ArgumentException("HUGO"); }, 0, tdc);
+            try {
+                Assert.Throws<ArgumentException>(() => sut.Dispose());
+            } catch {
+            }
+            sut.Dispose(); // no error again
+            Assert.Equal(1, cntDisposed);
+        }
+    }
 }
