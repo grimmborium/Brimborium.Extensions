@@ -47,12 +47,17 @@ namespace Brimborium.Extensions.Disposable {
         bool IDisposableState.IsDisposed() => (this._DisposeState & (int)(DisposeState.Disposed)) != 0;
 
         bool IDisposableState.IsFinalizeSuppressed() => (this._DisposeState & (int)(DisposeState.FinalizeSuppressed)) != 0;
+
+        ReportFinalizedInfo IDisposableState.GetReportFinalizedInfo()
+            => new ReportFinalizedInfo() {
+                Type = this.GetType(),
+                CtorStackTrace = this._CtorStackTrace
+            };
     }
     [Flags]
     public enum DisposeState {
         Disposed = 1,
         FinalizeSuppressed = 2,
         DisposedFaulted = 4,
-
     }
 }

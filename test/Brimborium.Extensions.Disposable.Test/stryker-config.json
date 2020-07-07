@@ -23,7 +23,7 @@
       "*Log*",
       "ToString",
       "*HashCode*",
-      "SetNextValue",
+      "SetNextValue2",
       "BitwiseSet",
       "BitwiseClear"
     ]
