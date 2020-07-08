@@ -35,7 +35,7 @@ namespace Brimborium.Extensions.Disposable {
                 this.Dispose(disposing: true);
                 InterlockedUtilty.BitwiseSet(ref this._DisposeState, (int)(DisposeState.Disposed));
             } catch {
-                InterlockedUtilty.BitwiseSet(ref this._DisposeState, (int)(DisposeState.Disposed | DisposeState.DisposedFaulted));
+                InterlockedUtilty.BitwiseSet(ref this._DisposeState, (int)(DisposeState.DisposedAndFaulted));
                 throw;
             } finally {
                 if (InterlockedUtilty.BitwiseSet(ref this._DisposeState, (int)(DisposeState.FinalizeSuppressed))) {
@@ -59,5 +59,6 @@ namespace Brimborium.Extensions.Disposable {
         Disposed = 1,
         FinalizeSuppressed = 2,
         DisposedFaulted = 4,
+        DisposedAndFaulted = 5,
     }
 }

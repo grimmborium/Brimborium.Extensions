@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+
+using System;
 
 using Xunit;
 
@@ -6,19 +8,32 @@ using Xunit;
 
 namespace Brimborium.Extensions.Disposable {
     public class TracedDisposableTest {
+        public class TestTracedDisposable : TracedDisposable {
+            private readonly Action<bool> _OnDispose;
+
+            public TestTracedDisposable(Action<bool> onDispose, TracedDisposableControl tracedDisposableControl) : base(tracedDisposableControl) {
+                this._OnDispose = onDispose;
+            }
+            protected override void Dispose(bool disposing) {
+                this._OnDispose(disposing);
+                base.Dispose(disposing);
+            }
+        }
+
         [Fact]
         public void TracedDisposable001() {
             int cnt = 0;
             var tdc = new TracedDisposableControl();
             tdc.CurrentReportFinalized = (rfi) => { cnt++; };
-
-            var sut = new TracedDisposable(tdc);
+            bool? disposeQ = null;
+            var sut = new TestTracedDisposable((d) => { disposeQ = d; }, tdc);
             Assert.False(((IDisposableState)sut).IsDisposed());
             Assert.False(((IDisposableState)sut).IsFinalizeSuppressed());
+            Assert.False(disposeQ.HasValue);
             sut.Dispose();
             Assert.True(((IDisposableState)sut).IsDisposed());
             Assert.True(((IDisposableState)sut).IsFinalizeSuppressed());
-
+            Assert.Equal(true, disposeQ);
             Assert.Equal(0, cnt);
         }
         [Fact]
@@ -29,20 +44,22 @@ namespace Brimborium.Extensions.Disposable {
             tdc.SetTraceEnabledForAll(true);
             tdc.CurrentReportFinalized = (rfi) => { cnt++; };
             {
+                bool? disposeQ = null;
                 for (int idx = 0; idx < 100; idx++) {
-                    var sut = new TracedDisposable(tdc);
+                    var sut = new TestTracedDisposable((d) => { disposeQ = d; }, tdc);
                     // NOT sut.Dispose();
                 }
                 System.GC.Collect(2, GCCollectionMode.Forced);
                 System.GC.WaitForPendingFinalizers();
 
-
                 Assert.True(cnt > 90, $"!({cnt} > 90)");
+                Assert.Equal(false, disposeQ);
             }
             cnt = 0;
             {
+                bool? disposeQ = null;
                 for (int idx = 0; idx < 100; idx++) {
-                    var sut = new TracedDisposable(tdc);
+                    var sut = new TestTracedDisposable((d) => { disposeQ = d; }, tdc);
                     sut.Dispose();
                 }
 
@@ -50,6 +67,7 @@ namespace Brimborium.Extensions.Disposable {
                 System.GC.WaitForPendingFinalizers();
 
                 Assert.Equal(0, cnt);
+                Assert.Equal(true, disposeQ);
             }
         }
 
@@ -58,7 +76,8 @@ namespace Brimborium.Extensions.Disposable {
             {
                 var tdc = new TracedDisposableControl();
                 tdc.SetTraceEnabledForAll(true);
-                var sut = new TracedDisposable(tdc);
+                bool? disposeQ = null;
+                var sut = new TestTracedDisposable((d) => { disposeQ = d; }, tdc);
                 IDisposableState sutDS = sut;
                 Assert.False(sutDS.IsDisposed());
                 Assert.False(sutDS.IsFinalizeSuppressed());
@@ -66,11 +85,14 @@ namespace Brimborium.Extensions.Disposable {
                 sut.Dispose();
                 Assert.True(sutDS.IsDisposed());
                 Assert.True(sutDS.IsFinalizeSuppressed());
+                Assert.Equal(true, disposeQ);
             }
 
             {
                 var tdc = new TracedDisposableControl();
-                var sut = new TracedDisposable(tdc);
+                // NOT tdc.SetTraceEnabledForAll(true);
+                bool? disposeQ = null;
+                var sut = new TestTracedDisposable((d) => { disposeQ = d; }, tdc);
                 IDisposableState sutDS = sut;
                 Assert.False(sutDS.IsDisposed());
                 Assert.False(sutDS.IsFinalizeSuppressed());
@@ -78,6 +100,7 @@ namespace Brimborium.Extensions.Disposable {
                 sut.Dispose();
                 Assert.True(sutDS.IsDisposed());
                 Assert.True(sutDS.IsFinalizeSuppressed());
+                Assert.Equal(true, disposeQ);
             }
         }
 

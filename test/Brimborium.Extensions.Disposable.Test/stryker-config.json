@@ -24,8 +24,8 @@
       "ToString",
       "*HashCode*",
       "SetNextValue2",
-      "BitwiseSet",
-      "BitwiseClear"
+      "BitwiseSet2",
+      "BitwiseClear2"
     ]
   }
 }

@@ -26,41 +26,41 @@ namespace Brimborium.Extensions.Disposable {
                 }
             }
         }
+
         public static bool BitwiseSet(
             ref int currentValue,
             int bitValue) {
-            if ((currentValue & bitValue) == bitValue) {
-                return false;
-            } else {
-                while (true) {
-                    var oldValue = currentValue;
-                    var nextValue = oldValue | bitValue;
-                    var prevValue = System.Threading.Interlocked.CompareExchange(
+            while (true) {
+                var oldValue = currentValue;
+                var nextValue = oldValue | bitValue;
+                if (oldValue == nextValue) {
+                    return false;
+                }
+                var prevValue = System.Threading.Interlocked.CompareExchange(
                         ref currentValue,
                         nextValue,
                         oldValue);
-                    if (prevValue == oldValue) {
-                        return ((prevValue & bitValue) != bitValue);
-                    }
+                if (prevValue == oldValue) {
+                    return true;
                 }
             }
         }
+        
         public static bool BitwiseClear(
             ref int currentValue,
             int bitValue) {
-            if ((currentValue & bitValue) == 0) {
-                return false;
-            } else {
-                while (true) {
-                    var oldValue = currentValue;
-                    var nextValue = oldValue & ~bitValue;
-                    var prevValue = System.Threading.Interlocked.CompareExchange(
+            while (true) {
+                var oldValue = currentValue;
+                var nextValue = oldValue & ~bitValue;
+                if (oldValue == nextValue) {
+                    return false;
+                }
+                var prevValue = System.Threading.Interlocked.CompareExchange(
                         ref currentValue,
                         nextValue,
                         oldValue);
-                    if (prevValue == oldValue) {
-                        return (prevValue & bitValue) != 0;
-                    }
+                if (prevValue == oldValue) {
+                    return true;
                 }
             }
         }

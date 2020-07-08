@@ -9,17 +9,10 @@ namespace Brimborium.Extensions.Freezable {
     public class FreezableObjectTests {
         [Fact()]
         public void FreezableObjectTest() {
-            Assert.True(false, "This test needs an implementation");
-        }
-
-        [Fact()]
-        public void FreezeTest() {
-            Assert.True(false, "This test needs an implementation");
-        }
-
-        [Fact()]
-        public void IsFrozenTest() {
-            Assert.True(false, "This test needs an implementation");
+            var sut = new FreezableObject();
+            Assert.False(sut.IsFrozen());
+            sut.Freeze();
+            Assert.True(sut.IsFrozen());
         }
     }
 }
