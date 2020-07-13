@@ -54,11 +54,4 @@ namespace Brimborium.Extensions.Disposable {
                 CtorStackTrace = this._CtorStackTrace
             };
     }
-    [Flags]
-    public enum DisposeState {
-        Disposed = 1,
-        FinalizeSuppressed = 2,
-        DisposedFaulted = 4,
-        DisposedAndFaulted = 5,
-    }
 }

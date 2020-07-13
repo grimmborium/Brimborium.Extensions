@@ -1,3 +1,5 @@
+#pragma warning disable IDE0041 // Use 'is null' check
+
 namespace Brimborium.Extensions.Freezable {
     using System;
     using System.Runtime.CompilerServices;
@@ -68,13 +70,13 @@ namespace Brimborium.Extensions.Freezable {
             return true;
         }
 
-        [System.Diagnostics.DebuggerStepThrough]
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        public static bool SetStringProperty(this IFreezable that, ref string thisProperty, string value) {
-            if (value == string.Empty) { value = null; }
+        //[System.Diagnostics.DebuggerStepThrough]
+        //[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool SetStringProperty(this IFreezable that, ref string thisProperty, string value, string nameOfProperty=null) {
+            //if (value == string.Empty) { value = null; }
             if (ReferenceEquals(thisProperty, value)) { return false; }
             if (string.Equals(thisProperty, value, System.StringComparison.Ordinal)) { return false; }
-            that.ThrowIfFrozen();
+            that.ThrowIfFrozen(nameOfProperty);
             thisProperty = value;
             return true;
         }
@@ -92,7 +94,20 @@ namespace Brimborium.Extensions.Freezable {
         }
 
 
-#if later                
+        [System.Diagnostics.DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static TProperty CreateOrGetCachedObject<TProperty, TArg0>(this IFreezable that, ref TProperty thisProperty, TArg0 arg0, Func<TArg0, TProperty> generator)
+                    where TProperty : class {
+            var result = thisProperty;
+            if (result is null) {
+                result = generator(arg0);
+                if (@that.IsFrozen()) {
+                    thisProperty = result;
+                }
+            }
+            return result;
+        }
+#if later
         [System.Diagnostics.DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         protected bool SetOwner<TOwner>(ref TOwner thisPropertyOwner, TOwner value)
