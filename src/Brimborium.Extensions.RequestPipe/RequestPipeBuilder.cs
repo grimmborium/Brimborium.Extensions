@@ -2,6 +2,7 @@
 namespace Brimborium.Extensions.RequestPipe {
     using System;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public class RequestPipeBuilder {
         public RequestPipeBuilder(IServiceCollection services) {
@@ -37,7 +38,19 @@ namespace Brimborium.Extensions.RequestPipe {
         public void Add<TRequest, TResponce, TRequestHandler>()
             where TRequest : IRequest<TResponce>
             where TRequestHandler : class, IRequestHandler<TRequest, TResponce> {
-            this.Services.AddTransient<IRequestHandler<TRequest, TResponce>, TRequestHandler>();
+            //where TRequestHandler : class, IRequestHandler<IRequest<TResponce>, TResponce> {
+            
+            this.Services.TryAddTransient<IRequestHandler<TRequest, TResponce>, TRequestHandler>();
+            //this.Services.TryAddTransient<IRequestHandler<IRequest<TResponce>, TResponce>, TRequestHandler>();
+            //var typeIRequestOfTResponce = typeof(IRequest<>).MakeGenericType(typeof(TResponce));
+            //if (typeIRequestOfTResponce == typeof(TRequest)) {
+            //    // nothing todo
+            //} else {
+            //    var typeIRequestHandler = typeof(IRequestHandler<,>).MakeGenericType(typeIRequestOfTResponce, typeof(TResponce));
+            //    if (typeIRequestHandler != typeof(TRequestHandler)) { 
+            //        this.Services.TryAddTransient(typeIRequestHandler, typeof(TRequestHandler));
+            //    }
+            //}
         }
     }
 }

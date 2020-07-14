@@ -12,12 +12,44 @@
         }
 
         public virtual IRequestHandler<IRequest<TResponce>, TResponce> Solve<TResponce>(IRequest<TResponce> request) {
-            var handler = this._ServiceProvider.GetService<IRequestHandler<IRequest<TResponce>, TResponce>>();
-            if (handler is null) {
-                var requestType = request.GetType();
-                var interfaces = requestType.GetInterfaces();
+            if (request is null) {
+                return default;
             }
-            return handler;
+            {
+                var handler = this._ServiceProvider.GetService<IRequestHandler<IRequest<TResponce>, TResponce>>();
+                if (handler is object) {
+                    return handler;
+                }
+            }
+#if
+            {
+                var requestType = request.GetType();
+                var interfacesOfRequest = requestType.GetInterfaces();
+                foreach (var interfaceOfRequest in interfacesOfRequest) {
+                    if (interfaceOfRequest.IsGenericType && !interfaceOfRequest.IsGenericTypeDefinition) {
+                        if (interfaceOfRequest.GetGenericTypeDefinition() == typeof(IRequest<>)) {
+                            var genericArguments = interfaceOfRequest.GetGenericArguments();
+                            if (genericArguments[0] == typeof(TResponce)) {
+                                //var typeRequest = typeof(IRequest<>).MakeGenericType(typeof(TResponce));
+                                var typeIRequestHandler = typeof(IRequestHandler<,>)
+                                    .MakeGenericType(
+                                        requestType, //typeRequest,
+                                        typeof(TResponce));
+                                var service = this._ServiceProvider.GetService(typeIRequestHandler);
+                                if (service is IRequestHandler<IRequest<TResponce>, TResponce> handler) {
+                                    return handler;
+                                }
+                            }
+                        }
+                    }
+                    //this._ServiceProvider.GetService
+                }
+                //throw new NotImplementedException();
+            }
+#endif
+            {
+                return default;
+            }
         }
     }
 }

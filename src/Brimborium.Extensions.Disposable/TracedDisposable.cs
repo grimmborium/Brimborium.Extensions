@@ -1,6 +1,10 @@
 ﻿using System;
 
 namespace Brimborium.Extensions.Disposable {
+    /// <summary>
+    /// Help find forgotten usings.
+    /// Can track - if enabled - the calling of the construtor reported by the destructor.
+    /// </summary>
     public class TracedDisposable : System.IDisposable, IDisposableState {
         private readonly string _CtorStackTrace;
         private TracedDisposableControl _TracedDisposableControl;

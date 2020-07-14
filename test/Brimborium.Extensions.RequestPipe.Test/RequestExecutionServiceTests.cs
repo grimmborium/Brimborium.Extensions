@@ -57,10 +57,12 @@ namespace Brimborium.Extensions.RequestPipe {
         }
 
         public class RequestHandlerGna : IRequestHandler<RequestGna, ResponceGna> {
+          //public Task<ResponceGna> ExecuteAsync(RequestGna request) {
             public Task<ResponceGna> ExecuteAsync(RequestGna request) {
                 var result = request.A + request.B;
                 return Task.FromResult<ResponceGna>(new ResponceGna() { Sum = result });
             }
+
         }
 
         [Fact]

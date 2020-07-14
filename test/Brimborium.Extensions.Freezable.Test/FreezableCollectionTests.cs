@@ -16,7 +16,11 @@ namespace Brimborium.Extensions.Freezable {
             Assert.Equal(1, sut.Count);
             sut.Add(2);
             Assert.Equal(2, sut.Count);
+            sut.Freeze();
+            Assert.ThrowsAny<System.InvalidOperationException>(() => {
+                sut.Add(3);
+            });
+            Assert.Equal(2, sut.Count);
         }
-
     }
 }

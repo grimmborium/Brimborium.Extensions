@@ -28,21 +28,6 @@ namespace Brimborium.Extensions.Disposable {
                     return nextDict;
                 },
                 null);
-#if weichei
-            //for(int watchdog = 1000; watchdog > 0; watchdog--) {
-            while (true) {
-                Dictionary<Type, bool> oldDict = this._IsTraceEnabledForType;
-                Dictionary<Type, bool> nextDict
-                    = (this._IsTraceEnabledForType is null)
-                    ? new Dictionary<Type, bool>()
-                    : new Dictionary<Type, bool>(oldDict);
-                nextDict[type] = value;
-                var prevDict = System.Threading.Interlocked.CompareExchange(ref this._IsTraceEnabledForType, nextDict, oldDict);
-                if (ReferenceEquals(prevDict, oldDict)) {
-                    return;
-                }
-            }
-#endif
         }
 
         public static void ReportFinalized(
@@ -118,9 +103,5 @@ namespace Brimborium.Extensions.Disposable {
                 return sb.ToString();
             }
         }
-    }
-    public struct ReportFinalizedInfo {
-        public Type Type;
-        public string CtorStackTrace;
     }
 }

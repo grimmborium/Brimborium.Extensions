@@ -16,7 +16,8 @@
                 optionsBuilder.Configure(configure);
             }
             services.TryAddScoped<IRequestExecutionService, RequestExecutionService>();
-
+            services.TryAddScoped<IRequestHandlerSolver, RequestHandlerSolver>();
+            
             var requestPipeBuilder = new RequestPipeBuilder(services);
             if (register != null) {
                 register(requestPipeBuilder);

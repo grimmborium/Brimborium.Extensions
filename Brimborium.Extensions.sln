@@ -49,8 +49,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.HttpAdal", "Brimborium.Extensions.HttpAdal\Brimborium.Extensions.HttpAdal.csproj", "{F7933D75-40F5-43CE-A270-F6538262F624}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Abstractions.Test", "test\Brimborium.Extensions.Abstractions.Test\Brimborium.Extensions.Abstractions.Test.csproj", "{8166BE3F-C578-4117-953B-CD516531909D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Freezable", "src\Brimborium.Extensions.Freezable\Brimborium.Extensions.Freezable.csproj", "{BC28B172-7553-4C6D-977C-1603FFDB4238}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Freezable.Test", "test\Brimborium.Extensions.Freezable.Test\Brimborium.Extensions.Freezable.Test.csproj", "{DCBEFAB4-6395-4289-85AC-AF05F895CACC}"
@@ -309,18 +307,6 @@ Global
 		{F7933D75-40F5-43CE-A270-F6538262F624}.Release|x64.Build.0 = Release|Any CPU
 		{F7933D75-40F5-43CE-A270-F6538262F624}.Release|x86.ActiveCfg = Release|Any CPU
 		{F7933D75-40F5-43CE-A270-F6538262F624}.Release|x86.Build.0 = Release|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Debug|x64.Build.0 = Debug|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Debug|x86.Build.0 = Debug|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Release|x64.ActiveCfg = Release|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Release|x64.Build.0 = Release|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Release|x86.ActiveCfg = Release|Any CPU
-		{8166BE3F-C578-4117-953B-CD516531909D}.Release|x86.Build.0 = Release|Any CPU
 		{BC28B172-7553-4C6D-977C-1603FFDB4238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC28B172-7553-4C6D-977C-1603FFDB4238}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC28B172-7553-4C6D-977C-1603FFDB4238}.Debug|x64.ActiveCfg = Debug|Any CPU
