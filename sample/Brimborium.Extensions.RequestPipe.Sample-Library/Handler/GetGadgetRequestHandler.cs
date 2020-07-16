@@ -1,10 +1,10 @@
 ﻿namespace Brimborium.Extensions.RequestPipe.Sample_Library.Handler {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading.Tasks;
     using Brimborium.Extensions.RequestPipe;
     using Brimborium.Extensions.RequestPipe.Sample_Library.Model;
+
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public sealed class GetGadgetRequest : IRequest<GetGadgetResponce> {
     }
@@ -16,7 +16,10 @@
     public class GetGadgetRequestHandler : IRequestHandler<GetGadgetRequest, GetGadgetResponce> {
         public void SetOptions(IRequestHandlerOptions options) { }
 
-        public Task<GetGadgetResponce> ExecuteAsync(GetGadgetRequest request) {
+        public Task<GetGadgetResponce> ExecuteAsync(
+            GetGadgetRequest request,
+            CancellationToken cancellationToken,
+            IRequestHandlerExecutionContext executionContext) {
             var result = new GetGadgetResponce();
             result.Value = new List<Gadget>();
             result.Value.Add(new Gadget() { Id = 1, Name = "one" });

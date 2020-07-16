@@ -4,23 +4,36 @@
     using System.Threading.Tasks;
 
     public interface IRequestExecutionService {
-        Task<TResponce> ExecuteAsync<TResponce>(IRequest<TResponce> request);
+        Task<TResponse> ExecuteAsync<TResponse>(
+            IRequest<TResponse> request,
+            System.Threading.CancellationToken cancellationToken,
+            IRequestHandlerExecutionContext executionContext);
     }
 
     public interface IRequestHandlerTranslate<TResponse> {
-        Task<TResponse> Handle(
+        Task<TResponse> ExecuteAnyAsync(
+            object request,
+            CancellationToken cancellationToken,
+            IRequestExecutionServiceInner requestExecutionService);
+        Task<TResponse> ExecuteTypedAsync(
             IRequest<TResponse> request,
             CancellationToken cancellationToken,
-            IRequestHandlerFactory requestHandlerFactory);
+            IRequestExecutionServiceInner requestExecutionService);
     }
 
     public interface IRequestHandlerFactory {
-        T GetInstance<T>();
+        T CreateRequestHandler<T>();
 
-        IEnumerable<T> GetInstances<T>();
+        IEnumerable<T>? CreateRequestHandlerChains<T>();
+    }
+
+    public interface IRequestExecutionServiceInner : IRequestExecutionService {
+        IRequestHandlerFactory GetRequestHandlerFactory();
     }
 
     public interface IRequestHandlerSolver {
-        IRequestHandler<IRequest<TResponce>, TResponce> Solve<TResponce>(IRequest<TResponce> request);
+        IRootRequestHandler<TResponse> GetRequestHandler<TResponse>(IRequest<TResponse> request, IRequestHandlerExecutionContext executionContext);
+        IRootRequestHandler<TResponse> GetRootRequestHandler<TRequest, TResponse>() where TRequest : IRequest<TResponse>;
+        
     }
 }
