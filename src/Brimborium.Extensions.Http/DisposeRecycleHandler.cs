@@ -1,5 +1,7 @@
 ﻿namespace Brimborium.Extensions.Http {
     using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The outmost handler - Does nothing while SendAsync.
@@ -16,6 +18,12 @@
             HttpClientRecycler httpClientRecycler
             ) : base(innerHandler) {
             this._HttpClientRecycler = httpClientRecycler;
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+            using (var usageLock = this._HttpClientRecycler.GetUsageLock()) { 
+                return await base.SendAsync(request, cancellationToken);
+            }
         }
 
         /// <summary>Calls the recycler - one time.</summary>

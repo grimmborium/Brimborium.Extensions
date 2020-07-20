@@ -44,57 +44,74 @@
                     }
                 }
             }
+            // using ref count instead of weak references
             System.Threading.Interlocked.Increment(ref this._Usage);
-            //
-            var trigger = new DisposeRecycleHandler(handler, this);
-            var httpClient = new HttpClient(trigger, true);
-            if (!string.IsNullOrEmpty(this._Configuration.BaseAddress)) {
-                httpClient.BaseAddress = new Uri(this._Configuration.BaseAddress);
-            }
-            foreach (var action in this._Configuration.HttpClientConfigurations) {
-                if (action != null) {
-                    action(httpClient, this._Configuration);
-                }
-            }
-            return httpClient;
-        }
-
-        private ReuseRecycleHandler CreateReuseRecycleHandler() {
-            // within lock
             try {
-                var services = this._Services;
-                var scope = (IServiceScope)null;
-
-                if (!this._Configuration.SuppressHandlerScope) {
-                    scope = this._ScopeFactory?.CreateScope();
-                    if (scope != null) {
-                        services = scope.ServiceProvider;
+                //
+                var trigger = new DisposeRecycleHandler(handler, this);
+                var httpClient = new HttpClient(trigger, true);
+                if (!string.IsNullOrEmpty(this._Configuration.BaseAddress)) {
+                    httpClient.BaseAddress = new Uri(this._Configuration.BaseAddress);
+                }
+                foreach (var action in this._Configuration.HttpClientConfigurations) {
+                    if (action != null) {
+                        action(httpClient, this._Configuration);
                     }
                 }
-
-                var loggerName = this._Configuration.Name;
-                //
-                var outerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
-                var innerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
-
-                var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
-                builder.SetConfiguration(this._Configuration);
-                builder.ApplyConfig();
-                var messageHandler = builder.Build(innerLogger);
-                
-                var handler = new ReuseRecycleHandler(
-                    messageHandler,
-                    scope,
-                    outerLogger
-                    );
-
-                System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
-
-                return handler;
+                return httpClient;
             } catch {
                 System.Threading.Interlocked.Decrement(ref this._Usage);
                 throw;
             }
+        }
+
+        private ReuseRecycleHandler CreateReuseRecycleHandler() {
+            // within lock
+            var services = this._Services;
+            var scope = (IServiceScope)null;
+
+            if (!this._Configuration.SuppressHandlerScope) {
+                scope = this._ScopeFactory?.CreateScope();
+                if (scope != null) {
+                    services = scope.ServiceProvider;
+                }
+            }
+
+            var loggerName = this._Configuration.Name;
+            //
+            var outerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.LogicalHandler");
+            var innerLogger = this._LoggerFactory?.CreateLogger($"System.Net.Http.HttpClient.{loggerName}.ClientHandler");
+
+            var builder = services.GetRequiredService<IHttpMessageHandlerBuilder>();
+            builder.SetConfiguration(this._Configuration);
+            builder.ApplyConfig();
+            var messageHandler = builder.Build(innerLogger);
+                
+            var handler = new ReuseRecycleHandler(
+                messageHandler,
+                scope,
+                outerLogger
+                );
+
+            System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+
+            return handler;
+        }
+
+        internal bool IsValid() {
+            System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+            var nextInnerHandler = this._ReuseRecycleHandler.InnerHandler;
+            var innerHandler = nextInnerHandler;
+            while (innerHandler is object) {
+                nextInnerHandler = innerHandler;
+                if (nextInnerHandler is DelegatingHandler delegatingHandler) {
+                    innerHandler = delegatingHandler.InnerHandler;
+                }
+            }
+            if (innerHandler is HttpClientHandlerEx httpClientHandler) {
+                return !(httpClientHandler.IsDisposed);
+            }
+            return true;
         }
 
         internal void OnDispose(DisposeRecycleHandler disposeRecycleHandler) {
@@ -123,6 +140,44 @@
             } else {
                 System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
             }
+        }
+
+        internal IDisposable GetUsageLock() {
+            System.Threading.Interlocked.Increment(ref this._Usage);
+            return new UsageLock(this);
+        }
+
+        class UsageLock : IDisposable {
+            private HttpClientRecycler _Owner;
+
+            public UsageLock(HttpClientRecycler owner) {
+                this._Owner = owner;
+            }
+            protected virtual void Dispose(bool disposing) {
+                var owner = System.Threading.Interlocked.Exchange(ref this._Owner, null);
+                if (owner is object) {
+                    owner.OnDispose(null);
+                }
+            }
+
+            ~UsageLock() {
+                Dispose(disposing: false);
+            }
+
+            public void Dispose() {
+                System.GC.SuppressFinalize(this);
+                this.Dispose(disposing: true);
+            }
+        }
+
+    }
+    public class HttpClientHandlerEx : HttpClientHandler {
+        public bool IsDisposed { get; private set; }
+        public HttpClientHandlerEx() :base(){
+        }
+        protected override void Dispose(bool disposing) {
+            this.IsDisposed = true;
+            base.Dispose(disposing);
         }
     }
 }
