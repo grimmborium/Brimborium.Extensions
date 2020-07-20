@@ -4,6 +4,7 @@
 
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class RequestExecutionService
@@ -29,14 +30,14 @@
             : this(options?.Value, new RequestHandlerFactoryWithServiceProvider(serviceProvider)) {
         }
 
-        public virtual Task<TResponse> ExecuteAsync<TResponse>(
+        public virtual Task<Response<TResponse>> ExecuteAsync<TResponse>(
             IRequest<TResponse> request,
             System.Threading.CancellationToken cancellationToken) {
             var executionContext = new RequestHandlerExecutionContext();
             return this.ExecuteAsync(request, cancellationToken, executionContext);
         }
 
-        public virtual async Task<TResponse> ExecuteAsync<TResponse>(
+        public virtual async Task<Response<TResponse>> ExecuteAsync<TResponse>(
             IRequest<TResponse> request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext) {
@@ -48,17 +49,21 @@
 
             var handler = solver.GetRequestHandler<TResponse>(request, executionContext);
             var task = handler.ExecuteTypedAsync(request, cancellationToken, executionContext);
-            //var funcAsync = solver.SolveFunc<TResponse>(request, executionContext);
-            //var task = funcAsync(request, executionContext);
             var result = await task.ConfigureAwait(false);
             return result;
         }
-        public virtual async Task<object?> ExecuteAsync(object request, IRequestHandlerExecutionContext executionContext) {
+       
+        public virtual async Task<Response<object?>> ExecuteAsync(
+            IRequestBase request,
+            System.Threading.CancellationToken cancellationToken,
+            IRequestHandlerExecutionContext executionContext) {
+            // request.GetType();
             await Task.CompletedTask;
             throw new Exception();
         }
 
         public IRequestHandlerFactory GetRequestHandlerFactory() => this._RequestHandlerFactory;
+        public List<RequestPipeOptions> GetRequestPipeOptions<TRequest, TResponse>() where TRequest : IRequest<TResponse> => throw new NotImplementedException();
 
         protected virtual IRequestHandlerSolver GetSolver() {
             var solver = this._Solver;
@@ -76,24 +81,6 @@
                     return solver;
                 } else {
                     return this._Solver;
-                }
-            }
-        }
-
-        private class RequestHandlerFactoryWithServiceProvider : IRequestHandlerFactory {
-            private readonly IServiceProvider _ServiceProvider;
-
-            public RequestHandlerFactoryWithServiceProvider(IServiceProvider serviceProvider) {
-                this._ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            }
-
-            public T CreateRequestHandler<T>() => this._ServiceProvider.GetRequiredService<T>();
-            public IEnumerable<T>? CreateRequestHandlerChains<T>() {
-                var result = this._ServiceProvider.GetServices<T>();
-                if (result is null) {
-                    return Array.Empty<T>();
-                } else {
-                    return result;
                 }
             }
         }

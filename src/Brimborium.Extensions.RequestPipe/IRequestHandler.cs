@@ -1,7 +1,7 @@
 ﻿namespace Brimborium.Extensions.RequestPipe {
     using System.Threading.Tasks;
 
-    public interface IRequestHandlerBase {
+    public interface IRequestHandlerBase {        
     }
 
     public interface IRequestHandlerWithOptions {
@@ -17,7 +17,7 @@
     public interface IRequestHandler<in TRequest, TResponse>
         : IRequestHandlerBase
         where TRequest : IRequest<TResponse> {
-        Task<TResponse> ExecuteAsync(
+        Task<Response<TResponse>> ExecuteAsync(
             TRequest request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext);
@@ -32,22 +32,29 @@
 
     public interface IRootRequestHandler<TResponse>
         : IRootRequestHandler {
-        Task<TResponse> ExecuteTypedAsync(
+        Task<Response<TResponse>> ExecuteTypedAsync(
             IRequest<TResponse> request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext);
     }
 
-    // public delegate Task<TResponse> RequestHandlerChainDelegate<in TRequest, TResponse>(TRequest request, IRequestHandlerExecutionContext executionContext);
+    // public delegate Task<Response<TResponse>> RequestHandlerChainDelegate<in TRequest, TResponse>(TRequest request, IRequestHandlerExecutionContext executionContext);
 
     public interface IRequestHandlerChain<TRequest, TResponse>
         : IRequestHandlerChainBase
         where TRequest : IRequest<TResponse> {
 
-        Task<TResponse> ExecuteAsync(
+        Task<Response<TResponse>> ExecuteAsync(
             TRequest request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext,
             IRequestHandler<TRequest, TResponse> next);
+    }
+
+    public class RequestHandlerConfiguration {
+        public RequestHandlerConfiguration() {
+        }
+
+        public System.Type? RequestHandlerType { get; set; }
     }
 }

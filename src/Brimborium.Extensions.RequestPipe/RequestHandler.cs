@@ -14,12 +14,12 @@
             this.Options = options;
         }
 
-        public virtual async Task<TResponse> ExecuteAsync(
+        public virtual async Task<Response<TResponse>> ExecuteAsync(
             TRequest request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext) {
             var options = this.Options ?? RequestHandlerFallbackOptions.GetInstance();
-            Task<TResponse> task;
+            Task<Response<TResponse>> task;
             try {
                 task = this.HandleAsync(request, cancellationToken, executionContext);
             } catch (System.Exception error) {
@@ -40,7 +40,7 @@
             }
         }
 
-        protected abstract Task<TResponse> HandleAsync(
+        protected abstract Task<Response<TResponse>> HandleAsync(
             TRequest request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext);
@@ -49,12 +49,14 @@
     public class RequestHandlerChain<TRequest, TResponse>
        : IRequestHandlerChain<TRequest, TResponse>
        where TRequest : IRequest<TResponse> {
-        public Task<TResponse> ExecuteAsync(
+        public Task<Response<TResponse>> ExecuteAsync(
             TRequest request,
             CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext,
             IRequestHandler<TRequest, TResponse> next) {
             return next.ExecuteAsync(request, cancellationToken, executionContext);
         }
+
+        public int GetOrder() => 0;
     }
 }

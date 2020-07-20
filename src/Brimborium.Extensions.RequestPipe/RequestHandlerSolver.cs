@@ -12,26 +12,27 @@ namespace Brimborium.Extensions.RequestPipe {
         private static Dictionary<Type, Type> _RequestHandlerTranslates = new Dictionary<Type, Type>();
         private static Dictionary<Type, object> _RequestHandlers = new Dictionary<Type, object>();
 
-        public static RequestHandlerSolver Create(IRequestHandlerFactory requestHandlerFactory) {
-            return new RequestHandlerSolver(requestHandlerFactory);
-        }
-
         private readonly IRequestHandlerFactory _RequestHandlerFactory;
-        public RequestHandlerSolver(IRequestHandlerFactory requestHandlerFactory) {
+
+        public RequestHandlerSolver(
+            IRequestHandlerFactory requestHandlerFactory) {
             this._RequestHandlerFactory = requestHandlerFactory ?? throw new ArgumentNullException(nameof(requestHandlerFactory));
         }
 
-        public IRootRequestHandler<TResponse> GetRequestHandler<TResponse>(IRequest<TResponse> request, IRequestHandlerExecutionContext executionContext) {
-            var solverTranslate = this.GetSolverTranslate<TResponse>(request);
-            var rootRequestHandler = solverTranslate.GetRootRequestHandler(request, executionContext);
-            return rootRequestHandler;
-        }
-
-        internal RequestHandlerSolverTranslate<TResponse> GetSolverTranslate<TResponse>(IRequest<TResponse> request) {
+        public IRootRequestHandler<TResponse> GetRequestHandler<TResponse>(
+            IRequest<TResponse> request,
+            IRequestHandlerExecutionContext executionContext) {
             if (request is null) {
                 throw new ArgumentNullException(nameof(request));
             }
             var requestType = request.GetType();
+            var solverTranslate = this.GetSolverTranslate<TResponse>(requestType);
+            var rootRequestHandler = solverTranslate.GetRootRequestHandler(request, executionContext);
+            return rootRequestHandler;
+        }
+
+        internal RequestHandlerSolverTranslate<TResponse> GetSolverTranslate<TResponse>(
+            Type requestType) {
             {
                 if (_RequestHandlers.TryGetValue(requestType, out var handler)) {
                     return (RequestHandlerSolverTranslate<TResponse>)handler;
@@ -75,7 +76,7 @@ namespace Brimborium.Extensions.RequestPipe {
             where TRequest : IRequest<TResponse> {
             IRequestHandler<TRequest, TResponse> requestHandler;
             IEnumerable<IRequestHandlerChain<TRequest, TResponse>>? requestHandlerChains;
-            this.
+            
             try {
                 requestHandler = this._RequestHandlerFactory.CreateRequestHandler<IRequestHandler<TRequest, TResponse>>();
             } catch (Exception error) {
@@ -89,14 +90,17 @@ namespace Brimborium.Extensions.RequestPipe {
             } catch (Exception error) {
                 throw new InvalidOperationException($"Error constructing handler for request of type {typeof(IRequestHandlerChain<TRequest, TResponse>)}.", error);
             }
+            
+            //var lstRequestHandleCfg = new List<RequestHandlerConfiguration>();
+
 
             var result = requestHandler;
             if (requestHandlerChains is object) {
-                var arrRequestHandlerChain = requestHandlerChains.ToArray();
-                Array.Sort(arrRequestHandlerChain, IRequestHandlerChainBaseComparer.GetInstance());
+                var lstRequestHandlerChain = requestHandlerChains.ToList();
+                lstRequestHandlerChain.Sort(IRequestHandlerChainBaseComparer.GetInstance());
 
-                for (int idx = arrRequestHandlerChain.Length - 1; idx >= 0; idx--) {
-                    IRequestHandlerChain<TRequest, TResponse>? chain = arrRequestHandlerChain[idx];
+                for (int idx = lstRequestHandlerChain.Count - 1; idx >= 0; idx--) {
+                    IRequestHandlerChain<TRequest, TResponse>? chain = lstRequestHandlerChain[idx];
                     if (chain is object) {
                         result = new RequestHandlerChainer<TRequest, TResponse>(chain, result);
                     }
@@ -118,7 +122,7 @@ namespace Brimborium.Extensions.RequestPipe {
             this._Next = next ?? throw new ArgumentNullException(nameof(next));
         }
 
-        public Task<TResponse> ExecuteAsync(TRequest request, System.Threading.CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
+        public Task<Response<TResponse>> ExecuteAsync(TRequest request, System.Threading.CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
             return this._RequestHandlerChain.ExecuteAsync(request, cancellationToken, executionContext, this._Next);
         }
     }
@@ -170,7 +174,7 @@ namespace Brimborium.Extensions.RequestPipe {
                 }, cancellationToken);
         }
 
-        public Task<TResponse> ExecuteTypedAsync(IRequest<TResponse> request, CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
+        public Task<Response<TResponse>> ExecuteTypedAsync(IRequest<TResponse> request, CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
             return this._RequestHandler.ExecuteAsync((TRequest)request, cancellationToken, executionContext);
         }
     }
