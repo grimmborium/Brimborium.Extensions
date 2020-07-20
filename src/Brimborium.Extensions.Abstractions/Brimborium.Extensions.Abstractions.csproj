@@ -1,10 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.2;netcoreapp3.1;net461</TargetFrameworks>
+    <Authors>Florian Grimm</Authors>
+    <Company />
+    <Product>Brimborium.Extensions</Product>
+    <Description>
+      Base types.
+    </Description>
+    <Copyright>Florian Grimm</Copyright>
+    <PackageSummary>The HttpClientGenerator is a factory for HttpClient.</PackageSummary>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/grimmborium/Brimborium.Extensions</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/grimmborium/Brimborium.Extensions/master/logo.png</PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/grimmborium/Brimborium.Extensions</RepositoryUrl>
+    <AssetTargetFallback>$(PackageTargetFallback);netstandard2.0</AssetTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 

@@ -1,10 +1,10 @@
 ﻿namespace Brimborium.Extensions.Http {
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+
     using System;
     using System.Net.Http;
     using System.Threading;
-
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>Controlls the creating and disposing of the HttpClient and HttpMessageHandler stack.</summary>
     public class HttpClientRecycler {
@@ -27,13 +27,15 @@
             ILoggerFactory loggerFactory,
             HttpClientConfiguration configuration
             ) {
-            this._Services = services ?? throw new ArgumentNullException(nameof(services));
-            this._ScopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
+            this._Services = services;
+            this._ScopeFactory = scopeFactory;
             this._LoggerFactory = loggerFactory;
             this._Configuration = configuration;
         }
 
         public HttpClient CreateHttpClient() {
+            System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
+
             var handler = this._ReuseRecycleHandler;
             if (handler == null) {
                 lock (this) {
@@ -115,7 +117,7 @@
         }
 
         internal void OnDispose(DisposeRecycleHandler disposeRecycleHandler) {
-            if (System.Threading.Interlocked.Decrement(ref this._Usage) == 0) {
+            if (System.Threading.Interlocked.Decrement(ref this._Usage) <= 0) {
                 // Create Timer
                 lock (this) {
                     if (Volatile.Read(ref this._Timer) == null) {
@@ -131,7 +133,7 @@
         }
 
         private void OnTimer(object state) {
-            if (this._Usage <= 0) {
+            if (this._Usage == 0) {
                 lock (this) {
                     var handler = System.Threading.Interlocked.Exchange(ref this._ReuseRecycleHandler, null);
                     System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();

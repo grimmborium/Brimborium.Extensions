@@ -2,6 +2,6 @@
     using System;
     public interface IRequestBase {
     }
-    public interface IRequest<TResponce> : IRequestBase {
+    public interface IRequest<TResponse> : IRequestBase {
     }
 }

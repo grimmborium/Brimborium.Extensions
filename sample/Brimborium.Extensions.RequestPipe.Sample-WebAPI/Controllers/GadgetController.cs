@@ -2,9 +2,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+
     using Brimborium.Extensions.RequestPipe.Sample_Library.Handler;
     using Brimborium.Extensions.RequestPipe.Sample_Library.Model;
+
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
@@ -20,7 +23,7 @@
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Gadget>>> Get() {
             var request = new GetGadgetRequest();
-            var result = await this._RequestExecution.ExecuteAsync(request);
+            var result = await this._RequestExecution.ExecuteAsync(request, CancellationToken.None, null);
             return result.Value;
         }
 

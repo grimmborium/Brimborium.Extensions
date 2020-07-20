@@ -21,3 +21,9 @@ The two projects should provide an idead how to use HttpClientGenerator.
 
 
 The other projects are experimental don't use it.
+
+
+dotnet new tool-manifest
+dotnet tool install dotnet-stryker
+dotnet tool run dotnet-stryker
+dotnet dotnet-stryker

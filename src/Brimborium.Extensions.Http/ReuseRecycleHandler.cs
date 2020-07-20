@@ -1,5 +1,6 @@
 ﻿namespace Brimborium.Extensions.Http {
     using Brimborium.Extensions.Http.Logging;
+
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
@@ -14,19 +15,26 @@
     /// This is the first handler that will be reused.
     /// </summary>
     public class ReuseRecycleHandler : DelegatingHandler, IDisposable {
+        private readonly HttpClientRecycler _HttpClientRecycler;
+        private readonly HttpClientConfiguration _Configuration;
         private readonly ILogger _Logger;
         private IServiceScope _Scope;
 
         /// <summary>ctor</summary>
+        /// <param name="httpClientRecycler">owner</param>
         /// <param name="innerHandler">the next inner handler.</param>
         /// <param name="configuration">the configuration to use</param>
         /// <param name="scope">the scope.</param>
-        /// <param name="logger">the logger - can be null.</param>
+        /// <param name="logger">the logger.</param>
         public ReuseRecycleHandler(
+            HttpClientRecycler httpClientRecycler,
             HttpMessageHandler innerHandler,
+            HttpClientConfiguration configuration,
             IServiceScope scope,
             ILogger logger
             ) : base(innerHandler) {
+            this._HttpClientRecycler = httpClientRecycler;
+            this._Configuration = configuration;
             this._Scope = scope;
             this._Logger = logger;
         }
@@ -35,20 +43,25 @@
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));
             }
-
-            var stopwatch = ValueStopwatch.StartNew();
-            using (Log.BeginRequestPipelineScope(this._Logger, request)) {
-                Log.RequestPipelineStart(this._Logger, request);
-                var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                Log.RequestPipelineEnd(this._Logger, response, stopwatch.GetElapsedTime());
-                return response;
+            using (this._HttpClientRecycler.CreateRefCountLock()) {
+                var stopwatch = ValueStopwatch.StartNew();
+                using (Log.BeginRequestPipelineScope(this._Logger, request)) {
+                    Log.RequestPipelineStart(this._Logger, request);
+                    var response = await base.SendAsync(request, cancellationToken);
+                    Log.RequestPipelineEnd(this._Logger, response, stopwatch.GetElapsedTime());
+                    return response;
+                }
             }
         }
 
         protected override void Dispose(bool disposing) {
+            //try {
+            //    this._Logger.LogDebug($"Dispose {disposing}");
+            //} catch { 
+            //}
             using (var scope = this._Scope) {
-                base.Dispose(disposing);
                 this._Scope = null;
+                base.Dispose(disposing);
             }
         }
 
@@ -74,40 +87,32 @@
                 "End processing HTTP request after {ElapsedMilliseconds}ms - {StatusCode}");
 
             public static IDisposable BeginRequestPipelineScope(ILogger logger, HttpRequestMessage request) {
-                if ((object)logger != null) {
-                    return _beginRequestPipelineScope(logger, request.Method, request.RequestUri);
-                } else {
-                    return null;
-                }
+                return _beginRequestPipelineScope(logger, request.Method, request.RequestUri);
             }
 
             public static void RequestPipelineStart(ILogger logger, HttpRequestMessage request) {
-                if ((object)logger != null) {
-                    _requestPipelineStart(logger, request.Method, request.RequestUri, null);
+                _requestPipelineStart(logger, request.Method, request.RequestUri, null);
 
-                    if (logger.IsEnabled(LogLevel.Trace)) {
-                        logger.Log(
-                            LogLevel.Trace,
-                            EventIds.RequestHeader,
-                            new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Request, request.Headers, request.Content?.Headers),
-                            null,
-                            (state, ex) => state.ToString());
-                    }
+                if (logger.IsEnabled(LogLevel.Trace)) {
+                    logger.Log(
+                        LogLevel.Trace,
+                        EventIds.RequestHeader,
+                        new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Request, request.Headers, request.Content?.Headers),
+                        null,
+                        (state, ex) => state.ToString());
                 }
             }
 
             public static void RequestPipelineEnd(ILogger logger, HttpResponseMessage response, TimeSpan duration) {
-                if ((object)logger != null) {
-                    _requestPipelineEnd(logger, duration.TotalMilliseconds, response.StatusCode, null);
+                _requestPipelineEnd(logger, duration.TotalMilliseconds, response.StatusCode, null);
 
-                    if (logger.IsEnabled(LogLevel.Trace)) {
-                        logger.Log(
-                            LogLevel.Trace,
-                            EventIds.ResponseHeader,
-                            new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Response, response.Headers, response.Content?.Headers),
-                            null,
-                            (state, ex) => state.ToString());
-                    }
+                if (logger.IsEnabled(LogLevel.Trace)) {
+                    logger.Log(
+                        LogLevel.Trace,
+                        EventIds.ResponseHeader,
+                        new HttpHeadersLogValue(HttpHeadersLogValue.Kind.Response, response.Headers, response.Content?.Headers),
+                        null,
+                        (state, ex) => state.ToString());
                 }
             }
         }

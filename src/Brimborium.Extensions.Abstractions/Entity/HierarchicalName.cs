@@ -1,11 +1,20 @@
 ﻿namespace Brimborium.Extensions.Entity {
     [System.Diagnostics.DebuggerDisplay("{Name}")]
     public sealed class HierarchicalName {
+        public readonly HierarchicalNameKind Kind;
         public readonly string Name;
+        public readonly int Index;
         public readonly HierarchicalName Parent;
 
         public HierarchicalName(string name) {
+            this.Kind = HierarchicalNameKind.Name;
             this.Name = name;
+        }
+
+        public HierarchicalName(int index) {
+            this.Kind = HierarchicalNameKind.Index;
+            this.Name = null;
+            this.Index = index;
         }
 
         public HierarchicalName(HierarchicalName parent, string name) {
@@ -20,19 +29,32 @@
         private string _ToString;
 
         public override string ToString() {
-            if ((object)this.Parent == null) {
-                return this.Name;
+            if (this._ToString is object) {
+                return this._ToString;
             } else {
-                return this._ToString ?? (this._ToString = $"{this.Parent.ToString()}/{this.Name}");
+                string name;
+                if (this.Kind == HierarchicalNameKind.Index) {
+                    name = this.Index.ToString();
+                } else {
+                    name = this.Name ?? string.Empty;
+                }
+                if (this.Parent is object) {
+                    name = (this._ToString = $"{this.Parent}/{name}");
+                }
+                this._ToString = name;
+                return name;
             }
         }
 
         public static implicit operator string(HierarchicalName that)
-            => ((object)that == null) ? string.Empty : that.ToString();
+            => (that is null) ? string.Empty : that.ToString();
 
         public static HierarchicalName operator +(HierarchicalName that, string name) {
             return new HierarchicalName(that, name);
         }
     }
-
+    public enum HierarchicalNameKind {
+        Name,
+        Index
+    }
 }

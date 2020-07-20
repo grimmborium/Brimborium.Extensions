@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.2;netcoreapp3.1;net461</TargetFrameworks>
+    <Authors>Florian Grimm</Authors>
+    <Company />
+    <Product>Brimborium.Extensions</Product>
+    <Description>
+      Tools around IDisposable.
+    </Description>
+    <Copyright>Florian Grimm</Copyright>
+    <PackageSummary>Tools around IDisposable.</PackageSummary>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/grimmborium/Brimborium.Extensions</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/grimmborium/Brimborium.Extensions/master/logo.png</PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/grimmborium/Brimborium.Extensions</RepositoryUrl>
+    <AssetTargetFallback>$(PackageTargetFallback);netstandard2.0</AssetTargetFallback>
+    <LangVersion>latest</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+</Project>
