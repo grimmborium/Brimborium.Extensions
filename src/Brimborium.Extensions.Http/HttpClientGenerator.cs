@@ -71,8 +71,11 @@
         public virtual HttpClient CreateHttpClient(HttpClientConfiguration configuration) {
             while (true) {
                 if (this._Recyclers.TryGetValue(configuration, out var recycler)) {
-                    return recycler.CreateHttpClient();
-                } else {
+                    if (recycler.IsValid()) {
+                        return recycler.CreateHttpClient();
+                    }
+                } 
+                {
                     recycler = new HttpClientRecycler(this.Services, this.ScopeFactory, this.LoggerFactory, configuration);
                     if (!this._Recyclers.TryAdd(configuration, recycler)) {
                         continue;
