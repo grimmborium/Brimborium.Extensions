@@ -73,12 +73,12 @@
                 this._PlayService = playService;
             }
 
-            public Task<PlayResponse> ExecuteAsync(
-                PlayRequest request,
-                CancellationToken cancellationToken,
+            public Task<Response<PlayResponse>> ExecuteAsync(
+                PlayRequest request, 
+                CancellationToken cancellationToken, 
                 IRequestHandlerExecutionContext executionContext) {
                 var responce = this._PlayService.Add(request);
-                return Task.FromResult<PlayResponse>(responce);
+                return Response.FromResultOkTask<PlayResponse>(responce);
             }
         }
     }

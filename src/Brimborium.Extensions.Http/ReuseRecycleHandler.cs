@@ -16,25 +16,25 @@
     /// </summary>
     public class ReuseRecycleHandler : DelegatingHandler, IDisposable {
         private readonly HttpClientRecycler _HttpClientRecycler;
-        private readonly HttpClientConfiguration _Configuration;
+        //private readonly HttpClientConfiguration _Configuration;
         private readonly ILogger _Logger;
         private IServiceScope _Scope;
 
         /// <summary>ctor</summary>
         /// <param name="httpClientRecycler">owner</param>
         /// <param name="innerHandler">the next inner handler.</param>
-        /// <param name="configuration">the configuration to use</param>
+        // <param name="configuration">the configuration to use</param>
         /// <param name="scope">the scope.</param>
         /// <param name="logger">the logger.</param>
         public ReuseRecycleHandler(
             HttpClientRecycler httpClientRecycler,
             HttpMessageHandler innerHandler,
-            HttpClientConfiguration configuration,
+            //HttpClientConfiguration configuration,
             IServiceScope scope,
             ILogger logger
             ) : base(innerHandler) {
             this._HttpClientRecycler = httpClientRecycler;
-            this._Configuration = configuration;
+            //this._Configuration = configuration;
             this._Scope = scope;
             this._Logger = logger;
         }
@@ -43,7 +43,7 @@
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));
             }
-            using (this._HttpClientRecycler.CreateRefCountLock()) {
+            using (this._HttpClientRecycler.GetUsageLock()) {
                 var stopwatch = ValueStopwatch.StartNew();
                 using (Log.BeginRequestPipelineScope(this._Logger, request)) {
                     Log.RequestPipelineStart(this._Logger, request);

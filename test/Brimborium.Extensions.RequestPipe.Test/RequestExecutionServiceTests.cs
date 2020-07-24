@@ -86,14 +86,10 @@ namespace Brimborium.Extensions.RequestPipe {
         }
 
         public class RequestHandlerGna : IRequestHandler<RequestGna, ResponseGna> {
-            public Task<ResponseGna> ExecuteAsync(
-                RequestGna request,
-                CancellationToken cancellationToken,
-                IRequestHandlerExecutionContext executionContext) {
+            public Task<Response<ResponseGna>> ExecuteAsync(RequestGna request, CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
                 var result = request.A + request.B;
-                return Task.FromResult<ResponseGna>(new ResponseGna() { Sum = result });
+                return Response.FromResultOkTask<ResponseGna>(new ResponseGna() { Sum = result });
             }
-
         }
 
         [Fact]
@@ -116,12 +112,12 @@ namespace Brimborium.Extensions.RequestPipe {
         }
 
         public class RequestHandlerFour : RequestHandler<RequestGna, ResponseGna> {
-            protected override Task<ResponseGna> HandleAsync(
+            protected override Task<Response<ResponseGna>> HandleAsync(
                 RequestGna request,
                 CancellationToken cancellationToken,
                 IRequestHandlerExecutionContext executionContext) {
                 var result = request.A + request.B;
-                return Task.FromResult<ResponseGna>(new ResponseGna() { Sum = result });
+                return Response.FromResultOkTask<ResponseGna>(new ResponseGna() { Sum = result });
             }
         }
 

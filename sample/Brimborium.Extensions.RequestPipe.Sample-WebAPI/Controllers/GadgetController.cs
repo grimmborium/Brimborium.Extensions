@@ -23,8 +23,13 @@
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Gadget>>> Get() {
             var request = new GetGadgetRequest();
-            var result = await this._RequestExecution.ExecuteAsync(request, CancellationToken.None, null);
-            return result.Value;
+            var response = await this._RequestExecution.ExecuteAsync(request, CancellationToken.None, null);
+
+            return response switch
+            { 
+                var (specification, result) when specification is ResponseOK => new ActionResult<IEnumerable<Gadget>>(result.Value),
+                _=> this.BadRequest()
+            };
         }
 
         // GET api/Gadget/5

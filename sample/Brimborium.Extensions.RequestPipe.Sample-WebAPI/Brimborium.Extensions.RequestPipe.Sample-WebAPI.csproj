@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>Brimborium.Extensions.RequestPipe.Sample_WebAPI</RootNamespace>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Brimborium.Extensions.RequestPipe.AspNetCore\Brimborium.Extensions.RequestPipe.AspNetCore.csproj" />
     <ProjectReference Include="..\Brimborium.Extensions.RequestPipe.Sample-Library\Brimborium.Extensions.RequestPipe.Sample-Library.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,12 @@ namespace Brimborium.Extensions.RequestPipe {
         public static ResponseOK OK => _InstanceOK ??= new ResponseOK();
     }
 
-    public class ResponseOK : ResponseSpecification {
+    public class ResponseSuccess : ResponseSpecification {
+        public ResponseSuccess() {
+        }
+    }
+
+    public class ResponseOK : ResponseSuccess {
         public ResponseOK() {
         }
     }
@@ -22,11 +27,16 @@ namespace Brimborium.Extensions.RequestPipe {
     }
 
     public class ResponseFaulted : ResponseSpecification {
-        public ResponseFaulted(Exception error) {
-            this.Error = error;
+        public ResponseFaulted(Exception exception) {
+            this.Exception = exception;
         }
 
-        public Exception Error { get; }
+        public T Rethrow<T>() {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(this.Exception).Throw();
+            return default!;
+        }
+
+        public Exception Exception { get; }
     }
 
 }

@@ -17,7 +17,7 @@
 
         public void SetOptions(IRequestHandlerOptions options) { }
 
-        public Task<Response<GetGadgetResponce>> ExecuteAsync2(
+        public Task<Response<GetGadgetResponce>> ExecuteAsync(
             GetGadgetRequest request,
             CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext) {
@@ -25,7 +25,7 @@
             result.Value = new List<Gadget>();
             result.Value.Add(new Gadget() { Id = 1, Name = "one" });
             result.Value.Add(new Gadget() { Id = 2, Name = "two" });
-            return Task.FromResult<GetGadgetResponce>(result);
+            return Response.FromResultOkTask<GetGadgetResponce>(result);
         }
 
     }
