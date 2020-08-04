@@ -1,7 +1,8 @@
-﻿namespace Brimborium.Extensions.RequestPipe {
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
+using Brimborium.Extensions.Decoration;
+namespace Brimborium.Extensions.RequestPipe {
     public abstract class RequestHandler<TRequest, TResponse>
         : IRequestHandler<TRequest, TResponse>, IRequestHandlerWithOptions
         where TRequest : IRequest<TResponse> {

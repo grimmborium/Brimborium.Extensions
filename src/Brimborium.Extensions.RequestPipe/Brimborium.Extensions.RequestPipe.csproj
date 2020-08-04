@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Brimborium.Extensions.Decoration\Brimborium.Extensions.Decoration.csproj" />
+  </ItemGroup>
+
 </Project>

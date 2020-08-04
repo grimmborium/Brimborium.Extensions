@@ -1,7 +1,9 @@
-﻿namespace Brimborium.Extensions.RequestPipe {
-    using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-    public interface IRequestHandlerBase {        
+using Brimborium.Extensions.Decoration;
+
+namespace Brimborium.Extensions.RequestPipe {
+    public interface IRequestHandlerBase {
     }
 
     public interface IRequestHandlerWithOptions {
@@ -24,7 +26,7 @@
     }
 
     public interface IRootRequestHandler {
-        Task<object?> ExecuteObjectAsync(
+        Task<Response<object?>> ExecuteObjectAsync(
             object request,
             System.Threading.CancellationToken cancellationToken,
             IRequestHandlerExecutionContext executionContext);

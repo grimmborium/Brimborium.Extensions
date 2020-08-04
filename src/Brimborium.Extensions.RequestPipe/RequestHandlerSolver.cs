@@ -6,6 +6,8 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Brimborium.Extensions.Decoration;
+
 namespace Brimborium.Extensions.RequestPipe {
 
     public class RequestHandlerSolver : IRequestHandlerSolver {
@@ -76,7 +78,7 @@ namespace Brimborium.Extensions.RequestPipe {
             where TRequest : IRequest<TResponse> {
             IRequestHandler<TRequest, TResponse> requestHandler;
             IEnumerable<IRequestHandlerChain<TRequest, TResponse>>? requestHandlerChains;
-            
+
             try {
                 requestHandler = this._RequestHandlerFactory.CreateRequestHandler<IRequestHandler<TRequest, TResponse>>();
             } catch (Exception error) {
@@ -90,7 +92,7 @@ namespace Brimborium.Extensions.RequestPipe {
             } catch (Exception error) {
                 throw new InvalidOperationException($"Error constructing handler for request of type {typeof(IRequestHandlerChain<TRequest, TResponse>)}.", error);
             }
-            
+
             //var lstRequestHandleCfg = new List<RequestHandlerConfiguration>();
 
 
@@ -164,13 +166,15 @@ namespace Brimborium.Extensions.RequestPipe {
         public RootRequestHandler(IRequestHandler<TRequest, TResponse> requestHandler) {
             this._RequestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
         }
-        public Task<object?> ExecuteObjectAsync(object request, CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
+        public Task<Response<object?>> ExecuteObjectAsync(object request, CancellationToken cancellationToken, IRequestHandlerExecutionContext executionContext) {
             return this._RequestHandler.ExecuteAsync((TRequest)request, cancellationToken, executionContext)
                 .ContinueWith((t) => {
                     if (t.IsFaulted) {
-                        ExceptionDispatchInfo.Capture(t.Exception.InnerException).Throw();
+                        return Response.FromException<object?>(t.Exception.InnerException);
+                        //ExceptionDispatchInfo.Capture(t.Exception.InnerException).Throw();
+                    } else {
+                        return Response.FromResultOk<object?>((object?)t.Result);
                     }
-                    return (object?)t.Result;
                 }, cancellationToken);
         }
 
@@ -182,7 +186,7 @@ namespace Brimborium.Extensions.RequestPipe {
     internal class IRequestHandlerChainBaseComparer
         : IComparer<IRequestHandlerChainBase> {
         private static IRequestHandlerChainBaseComparer? _Instance;
-        public static IRequestHandlerChainBaseComparer GetInstance() 
+        public static IRequestHandlerChainBaseComparer GetInstance()
             => _Instance ??= new IRequestHandlerChainBaseComparer();
 
         public int Compare(IRequestHandlerChainBase x, IRequestHandlerChainBase y) {
