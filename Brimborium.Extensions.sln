@@ -57,7 +57,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Dispo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Disposable.Test", "test\Brimborium.Extensions.Disposable.Test\Brimborium.Extensions.Disposable.Test.csproj", "{ABF872B9-3577-4B6B-A1DD-69DA0FCAD19C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brimborium.Extensions.Decoration", "src\Brimborium.Extensions.Decoration\Brimborium.Extensions.Decoration.csproj", "{FDE2FB74-5F07-4EC2-8216-70C1729BBC41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.Extensions.Decoration", "src\Brimborium.Extensions.Decoration\Brimborium.Extensions.Decoration.csproj", "{FDE2FB74-5F07-4EC2-8216-70C1729BBC41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brimborium.PowerShell.StringTemplate4", "src\Brimborium.PowerShell.StringTemplate4\Brimborium.PowerShell.StringTemplate4.csproj", "{0F8D5B99-9074-409A-96D7-700FECA50CC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -369,6 +371,18 @@ Global
 		{FDE2FB74-5F07-4EC2-8216-70C1729BBC41}.Release|x64.Build.0 = Release|Any CPU
 		{FDE2FB74-5F07-4EC2-8216-70C1729BBC41}.Release|x86.ActiveCfg = Release|Any CPU
 		{FDE2FB74-5F07-4EC2-8216-70C1729BBC41}.Release|x86.Build.0 = Release|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Debug|x64.Build.0 = Debug|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Debug|x86.Build.0 = Debug|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Release|x64.ActiveCfg = Release|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Release|x64.Build.0 = Release|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Release|x86.ActiveCfg = Release|Any CPU
+		{0F8D5B99-9074-409A-96D7-700FECA50CC5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

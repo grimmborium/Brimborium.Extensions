@@ -90,9 +90,10 @@
             var messageHandler = builder.Build(innerLogger);
                 
             var handler = new ReuseRecycleHandler(
-                messageHandler,
-                scope,
-                outerLogger
+                    this,
+                    messageHandler,
+                    scope,
+                    outerLogger
                 );
 
             System.Threading.Interlocked.Exchange(ref this._Timer, null)?.Dispose();
